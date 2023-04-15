@@ -1,39 +1,26 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+import axios from 'axios'
+import { useEffect, useState } from 'react'
 import { Icon } from '@iconify/react';
+import Rating from '../components/Rating';
 
-export const Menu = () => {
-  const [menu, setMenu] = useState([]);
-  const [cartItems, setCartItems] = useState(JSON.parse(localStorage.getItem('cartItems')) || []);
+export const line = (
+  <div class="w-full border-b border-gray-300"></div>
+)
 
-  const deleteCartItem = (id) => {
-    const updatedCartItems = cartItems.filter(item => item !== id);
-    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
-    setCartItems(updatedCartItems);
-  };
-
-  const handleClick = (id) => {
-    if (!cartItems.includes(id)) {
-      const updatedCart = [...cartItems, id];
-      localStorage.setItem('cartItems', JSON.stringify(updatedCart));
-      setCartItems(updatedCart);
-      console.log(`Added item with id ${id} to the cart.`);
-    } else {
-      console.log(`Item with id ${id} has already been added to the cart.`);
+const Menu = ({handleClick}) => {
+    const [menu, setMenu] = useState([])
+    async function getMenu () {
+        try {
+            const response = await axios.get('http://localhost:5000/menu')
+            setMenu(response.data.allProducts)
+        } catch (err) {
+            console.log(err)
+        }
     }
-  };
-
-  useEffect(() => {
-    async function getMenu() {
-      try {
-        const response = await axios.get('http://localhost:5000/menu');
-        setMenu(response.data.allProducts);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    getMenu();
-  }, []);
+    
+    useEffect(() => {
+        getMenu()
+    }, [])
 
   const displayMenu = menu.map((item) => {
     return (
@@ -43,23 +30,19 @@ export const Menu = () => {
         </div>
         <div className="p-4 flex items-center flex-col">
           <h2 className="text-xl font-bold mb-2">{item.name}</h2>
-          <p className="text-gray-700 text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi at orci eget nisl condimentum rhoncus.
-            Praesent ac mauris mauris.
-          </p>
-          <div className="flex justify-between">
-            <h1 className="font-bold">{item.price}</h1>
+          {line}
+          <div className="py-3 flex items-center">
+            <Rating stars={item.meta.ratingsCount} />
+            <p className="text-orange font-bold text-lg">({item.meta.reviewsCount})</p>
+          </div>
+          {line}
+          <div className="pt-4 flex w-[300px] justify-between">
+            <h1 className="font-bold text-lg">₦{item.price.toLocaleString()}.00</h1>
             <button
-              className="bg-orange hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+              className="bg-orange hover:bg-blue-700 text-white font-bold rounded p-1"
               onClick={() => handleClick(item._id)}
             >
-              <Icon icon="material-symbols:add-rounded" color="white" />
-            </button>
-            <button
-              className="bg-red hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-              onClick={() => deleteCartItem(item._id)}
-            >
-              <Icon icon="material:delete" color="white" />
+              <Icon icon="material-symbols:add-rounded" color="white" className='text-2xl'/>
             </button>
           </div>
         </div>
@@ -68,10 +51,10 @@ export const Menu = () => {
   });
 
   return (
-    <main className="container">
+    <main className="container py-2">
       <div className="grid grid-cols-3 gap-3 px-48">{displayMenu}</div>
     </main>
   );
 };
 
-export { cartItems, deleteCartItem };
+export default Menu;

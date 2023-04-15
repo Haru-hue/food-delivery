@@ -1,8 +1,7 @@
 import { Icon } from "@iconify/react"
-// import { cartItems } from "../layouts/Menu"
 import { Link } from "react-router-dom"
 
-const Navbar = () => {
+const Navbar = ({ totalItems, cartItems }) => {
     return (
         <header className="container mb-4">
             <nav class="bg-black max-w-4xl mx-auto rounded-b-full">
@@ -27,7 +26,7 @@ const Navbar = () => {
                             <div class="relative inline-block">
                                 <Icon icon="la:shopping-bag" className="text-3xl" />
                                 <div class="absolute top-[-6px] right-[-5px] h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">{cartItems.length}</span>
+                                    <span class="text-white text-xs font-bold">{totalItems}{cartItems.length}</span>
                                 </div>
                             </div>
                         </Link>
