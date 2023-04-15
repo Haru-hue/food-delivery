@@ -12,8 +12,8 @@ const port = process.env.PORT || 5000
 connectToMongoose()
 app.use(express.json())
 // app.use(cookieParser());
-0
-// app.use(cors());
+
+app.use(cors());
  // Configure urlencoded middleware here
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));

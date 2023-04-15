@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
 // Menu
 router.get('/menu', controller.getProducts)
 router.post('/add-product', controller.addProduct)
+router.get('/product/:id', controller.getProduct)
 
 //Vendor
 router.get('/vendors', controller.getVendors)

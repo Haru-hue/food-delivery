@@ -6,7 +6,15 @@ module.exports = {
     container: {
       center: true
     },
-    extend: {},
+    
+    extend: {
+      colors: {
+        orange: "#F4572B"
+      },
+      width: {
+        '500': '500px'
+      }
+    },
   },
   plugins: [],
 }

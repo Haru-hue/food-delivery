@@ -2,12 +2,12 @@ const Home = () => {
     return (
         <main className="container">
             <section className="landing-section container-fluid">
-                <div className="grid grid-cols-3">
-                    <div className="col-lg-3">
+                <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-3">
                         <h1>Fastest <span>Delivery</span> & Easy <span>Pickup</span></h1>
                     </div>
-                    <div className="col-lg-6"></div>
-                    <div className="col-lg-3">
+                    <div className="col-span-6"></div>
+                    <div className="col-span-3">
                         <ul>
                             <li className="d-flex">
                                 <div className="icon"></div>
@@ -55,6 +55,57 @@ const Home = () => {
                 <div className="d-flex align-items-center justify-content-between">
                     <h2>Our <span className="text-orange text-3xl">Best Delivered</span> Categories</h2>
                     <p>It’s not just about bringing  you good food from restaurants, we deliver you experience</p>
+                </div>
+                <div className="grid grid-cols-12">
+                    <div className="col-span-4 flex justify-center">
+                        <p className="text-orange">Order Now</p>
+                    </div>
+                    <div className="col-span-4 flex justify-center">
+                        <p className="text-orange">Order Now</p>
+                    </div>
+                    <div className="col-span-4 flex justify-center">
+                        <p className="text-orange">Order Now</p>
+                    </div>
+                </div>
+            </section>
+            <section className="work-section">
+                <h1 className="font-bold">How It Works?</h1>
+                <div className="columns-2">
+                    <img src="" alt="" />
+                    <article>
+                        <p className="text-lg font-semibold">We are happy to tell you how to get how get your food to your home</p>
+                        <ul>
+                            <li className="flex">
+                                <div className="workicon"></div>
+                                <p>Choose Food & Order</p>
+                            </li>
+                            <li className="flex">
+                                <div className="workicon"></div>
+                                <p>Making payments on delivery</p>
+                            </li>
+                            <li className="flex">
+                                <div className="workicon"></div>
+                                <p>Orders have been prepared and ready to be delivered</p>
+                            </li>
+                            <li className="flex">
+                                <div className="workicon"></div>
+                                <p>The food has arrived, enjoy the meal </p>
+                            </li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+            <section className="food-banner">
+                <div className="grid grid-cols-2">
+                    <div>
+                        1
+                    </div>
+                    <div>
+                        <div className="grid grid-rows-2">
+                            <div className="deal-banner">1</div>
+                            <div className="deal-banner">2</div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
