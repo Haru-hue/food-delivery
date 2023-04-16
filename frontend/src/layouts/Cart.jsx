@@ -7,6 +7,7 @@ const Cart = ({ cartItems, deleteCartItem, totalItems, setTotalItems }) => {
   const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 // initialize totalItems to the length of cartItems
+  localStorage.clear()
 
 useEffect(() => {
   const filteredItems = cartItems.filter((item) => item !== null);
@@ -29,8 +30,7 @@ useEffect(() => {
 
   const totalCount = filteredItems.reduce((acc, item) => acc + item.count, 0);
   setTotalItems(totalCount);
-
-}, [cartItems]);
+}, [cartItems, setTotalItems]);
 
 useEffect(() => {
   setTotalItems(cartItems.reduce((acc, item) => acc + item.count, 0));

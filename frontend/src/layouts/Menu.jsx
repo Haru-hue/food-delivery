@@ -7,7 +7,7 @@ export const line = (
   <div class="w-full border-b border-gray-300"></div>
 )
 
-const Menu = ({handleClick}) => {
+const Menu = ({handleClick, setTotalItems}) => {
     const [menu, setMenu] = useState([])
     async function getMenu () {
         try {
@@ -40,7 +40,10 @@ const Menu = ({handleClick}) => {
             <h1 className="font-bold text-lg">₦{item.price.toLocaleString()}.00</h1>
             <button
               className="bg-orange hover:bg-blue-700 text-white font-bold rounded p-1"
-              onClick={() => handleClick(item._id)}
+              onClick={() => {
+                handleClick(item._id)
+                setTotalItems((prev) => prev + 1)
+              }}
             >
               <Icon icon="material-symbols:add-rounded" color="white" className='text-2xl'/>
             </button>
