@@ -1,55 +1,101 @@
-import Home from './layouts/Home'
-import Menu from './layouts/Menu'
-import './App.scss'
-import Cart from './layouts/Cart'
-import Navbar from './components/Navbar'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import Home from "./layouts/Home";
+import Menu from "./layouts/Menu";
+import "./App.scss";
+import Cart from "./layouts/Cart";
+import Navbar from "./components/Navbar";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
 
 function App() {
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems") || "[]")
   );
-  const [totalItems, setTotalItems] = useState(
-    cartItems.length > 0
-      ? cartItems.reduce((total, item) => total + item.count, 0)
-      : 0
-  );
- 
-  const deleteCartItem = (id, count) => {
-    const filteredItems = cartItems.filter((item) => item !== id);
-    setCartItems(filteredItems);
-    setTotalItems((prevTotalItems) => prevTotalItems - count); // subtract the count of the deleted item from the total count
-  };  
 
-  const handleClick = (id) => {
-    if (!cartItems.includes(id)) {
-      const updatedCart = [...cartItems, id];
-      setCartItems(updatedCart);
-      setTotalItems((prevTotalItems) => prevTotalItems + 1);
-      console.log(`Added item with id ${id} to the cart.`);
-    } else {
-      console.log(`Item with id ${id} has already been added to the cart.`);
-    }
+  const deleteCartItem = (id) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
   };
 
+  const handleClick = (newItem) => {
+    setCartItems((prevItems) => {
+      const itemOpt = prevItems.find((item) => item._id === newItem._id);
+
+      if (!itemOpt) {
+        return [...prevItems, { ...newItem, quantity: 1 }];
+      }
+
+      return prevItems.map((item) => {
+        if (item._id === newItem._id) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      });
+    });
+  };
+
+  const setItemQuantity = (id, quantity) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item._id !== id) return item;
+
+        return { ...item, quantity: Math.max(1, quantity) };
+      })
+    );
+  };
+
+  const updateItemQuantity = (id, value) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item._id !== id) return item;
+
+        return {
+          ...item,
+          quantity: Math.max(1, item.quantity + value),
+        };
+      })
+    );
+  };
+
+  const totalPrice = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
+    [cartItems]
+  );
+
+  const totalItems = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    [cartItems]
+  );
+
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    const newTotalItems = cartItems.reduce((total, item) => total + item.count, 0);
-    setTotalItems(newTotalItems);
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
   return (
-    <Router basename='/'>
-        <Navbar totalItems={totalItems} cartItems={cartItems}/>
-          <Routes>
-            <Route path="/" element={<Home/>} exact/>
-            <Route path="/menu" element={<Menu handleClick={handleClick} totalItems={totalItems} setTotalItems={setTotalItems}/>} exact/>
-            <Route path="/cart" element={<Cart cartItems={cartItems} setCartItems={setCartItems}
-            deleteCartItem={deleteCartItem} totalItems={totalItems} setTotalItems={setTotalItems}/>} exact/>
-          </Routes>
+    <Router basename="/">
+      <Navbar cartItems={cartItems} totalItems={totalItems} />
+      <Routes>
+        <Route path="/" element={<Home />} exact />
+        <Route
+          path="/menu"
+          element={<Menu handleClick={handleClick} />}
+          exact
+        />
+        <Route
+          path="/cart"
+          element={
+            <Cart
+              cartItems={cartItems}
+              updateItemQuantity={updateItemQuantity}
+              setItemQuantity={setItemQuantity}
+              deleteCartItem={deleteCartItem}
+              totalItems={totalItems}
+              totalPrice={totalPrice}
+            />
+          }
+          exact
+        />
+      </Routes>
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
