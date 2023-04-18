@@ -5,6 +5,7 @@ import Cart from "./layouts/Cart";
 import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
+import Footer from './components/Footer'
 
 function App() {
   const [cartItems, setCartItems] = useState(
@@ -94,6 +95,7 @@ function App() {
           exact
         />
       </Routes>
+      <Footer/>
     </Router>
   );
 }

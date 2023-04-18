@@ -1,6 +1,15 @@
 @use './styles/menu.scss';
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans&display=swap');
 
+@font-face {
+    font-family: Sunset-Serial;
+    src: url('./fonts/sunset-serial-bold.ttf');
+}
+
 body, html {
     font-family: 'DM Sans', sans-serif;
+}
+
+.title-font {
+    font-family: Sunset-Serial, sans-serif;
 }

@@ -5,7 +5,7 @@ const CategorySchema = require("../models/schemas/category");
 
 exports.getProducts = async (req, res) => {
   try {
-    const allProducts = await ProductSchema.find({});
+    const allProducts = await ProductSchema.find({}).populate('vendor', 'name');
     const totalProducts = await ProductSchema.countDocuments();
 
     res.json({ allProducts, totalProducts });
@@ -16,7 +16,7 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    const product = await ProductSchema.findById(req.params.id);
+    const product = await ProductSchema.findById(req.params.id)
     res.json(product);
   } catch (err) {
     res.json(err);

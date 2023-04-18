@@ -12,7 +12,8 @@ module.exports = {
         orange: "#F4572B"
       },
       width: {
-        '500': '500px'
+        '500': '500px',
+        'lg': '1280px'
       }
     },
   },

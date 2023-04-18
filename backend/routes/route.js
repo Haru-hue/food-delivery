@@ -14,6 +14,7 @@ router.get('/product/:id', controller.getProduct)
 //Vendor
 router.get('/vendors', controller.getVendors)
 router.post('/add-vendor', controller.addVendor)
+router.get('/vendor/:id', controller.getVendorProducts)
 
 //Category
 router.get('/categories', controller.getCategories)

@@ -1,27 +1,55 @@
 import axios from "axios";
+import ff from "../assets/fast-food.png"
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
-import products from "../foods";
+import { Link } from "react-router-dom";
 
 export const line = <div className="w-full border-b border-gray-300"></div>;
 
 const Menu = ({ handleClick }) => {
   const [menu, setMenu] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [productId, setProductId] = useState('');
+  const [allItems, setAllItems] = useState(true)
+  const [active, setActive] = useState(false)
+
+  async function getMenu() {
+    try {
+      const response = await axios.get("http://localhost:5000/menu");
+      console.log(response)
+      setMenu(response.data.allProducts);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getProducts (id) {
+    try {
+      const response = await axios.get(`http://localhost:5000/vendor/${id}`);
+      setMenu(response.data)
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getVendors() {
+    try {
+      const response = await axios.get("http://localhost:5000/vendors")
+      setVendors(response.data);
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   useEffect(() => {
-    async function getMenu() {
-      try {
-        // const response = await axios.get("http://localhost:8080/menu");
-        // setMenu(response.data.allProducts);
-        setMenu(products);
-      } catch (err) {
-        console.log(err);
-      }
+    if (allItems) { // fetch all products when showAllMenu is true
+      getMenu();
+    } else { // fetch products of selected vendor when showAllMenu is false
+      getProducts(productId);
     }
-
-    getMenu();
-  }, []);
+    getVendors();
+  }, [allItems, productId]);
 
   const displayMenu = menu.map((item) => {
     return (
@@ -46,7 +74,7 @@ const Menu = ({ handleClick }) => {
             </p>
           </div>
           {line}
-          <div className="pt-4 flex justify-between">
+          <div className="pt-4 flex justify-between w-[300px]">
             <h1 className="font-bold text-lg">
               ₦{item.price.toLocaleString()}.00
             </h1>
@@ -66,8 +94,37 @@ const Menu = ({ handleClick }) => {
     );
   });
 
+  const handleId = (id) => {
+    console.log(id);
+    setAllItems(false)
+    setProductId(id);
+    getProducts(id);
+    setActive(true)
+  }
+
+  const allVendors = vendors.map((item) => {
+    return (
+      <button key={item._id} onClick={() =>{ handleId(item._id)}}>{item.name}</button>
+    )
+  })
+
   return (
-    <main className="flex py-2">
+    <main className="py-2 container">
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline space-x-5">
+          <h1 className="font-bold text-3xl">Find the best foods</h1>
+          <img src={ff} alt=""  className="w-10"/>
+        </div>
+        <select name="" id="">
+          <option value="Sort by default">Sort by default</option>
+        </select>
+      </div>
+      <div className="flex justify-center space-x-14 py-5">
+        <button onClick={() => setAllItems(true)}
+          className={`px-10 py-2 ${active ? 'bg-gray-300': ''}`}
+        >All</button>
+        `{allVendors}
+      </div>
       <div className="grid grid-cols-3 gap-3 px-48">{displayMenu}</div>
     </main>
   );

@@ -14,7 +14,7 @@ var Food = new mongoose.Schema({
     },
     vendor: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Vendor'
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
