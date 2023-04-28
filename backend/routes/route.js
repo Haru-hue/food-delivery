@@ -20,4 +20,10 @@ router.get('/vendor/:id', controller.getVendorProducts)
 router.get('/categories', controller.getCategories)
 router.post('/add-category', controller.addCategory)
 
+//User 
+router.post('/register', controller.addNewUser)
+router.post('/login', controller.getUser)
+router.post('/logout', controller.logout);
+router.get('/session', controller.getSession)
+
 module.exports = router;

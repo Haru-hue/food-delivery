@@ -99,7 +99,7 @@ const Menu = ({ handleClick }) => {
     setAllItems(false)
     setProductId(id);
     getProducts(id);
-    setActive(true)
+    // setActive(true)
   }
 
   const allVendors = vendors.map((item) => {
@@ -116,7 +116,9 @@ const Menu = ({ handleClick }) => {
           <img src={ff} alt=""  className="w-10"/>
         </div>
         <select name="" id="">
-          <option value="Sort by default">Sort by default</option>
+          <option value="default" selected>Sort by default</option>
+          <option value="rating">Sort by highest rating</option>
+          <option value="experience">Sort from lowest to highest</option>
         </select>
       </div>
       <div className="flex justify-center space-x-14 py-5">

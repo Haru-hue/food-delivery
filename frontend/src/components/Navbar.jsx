@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 
-const Navbar = ({ totalItems }) => {
+const Navbar = ({ totalItems, name }) => {
   return (
     <header className="container mb-4">
       <nav className="bg-black max-w-4xl mx-auto rounded-b-full">
@@ -28,8 +28,14 @@ const Navbar = ({ totalItems }) => {
               </div>
             </div>
           </div>
-          <div className="flex items-baseline space-x-2 text-white">
-            <Icon icon="ic:round-search" className="text-3xl" />
+          <div className="flex items-baseline space-x-2 text-white pt-1">
+          {name === '' ? (
+                <Link to='/login'>
+                  <Icon icon="mdi:user-outline" className="text-3xl" />
+                </Link>
+              ) : (
+                name
+              )}
             <Link to="/cart">
               <div className="relative inline-block">
                 <Icon icon="la:shopping-bag" className="text-3xl" />

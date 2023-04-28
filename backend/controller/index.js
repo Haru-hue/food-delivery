@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 const ProductSchema = require("../models/schemas/food");
 const Vendor = require("../models/schemas/vendor");
 const CategorySchema = require("../models/schemas/category");
+const userSchema = require("../models/schemas/user");
+
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 exports.getProducts = async (req, res) => {
   try {
@@ -106,4 +111,46 @@ exports.getCategories = async (req, res) => {
   } catch (err) {
     res.json(err);
   }
+}
+
+exports.addNewUser = async (req, res) => {
+  try {
+    const newUser = new userSchema(req.body);
+    const user = await newUser.save();
+    res.status(200).json({ user, message: 'User registered successfully!' });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: 'Internal server error' });
+  }
+}
+
+exports.getUser =  async (req, res) => {
+  try {
+    const user = await userSchema.findOne({ email: req.body.email });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    if (!isMatch) {
+      throw new Error('Incorrect password');
+    }
+    req.session.name = user.firstName;
+    const token = jwt.sign({ _id: user._id }, 'mysecretkey');
+    res.send({ user, token, message: 'Login succesful'});
+  } catch (error) {
+    res.status(400).send(error);
+  }
+}
+
+exports.logout = async (req, res) => {
+  try {
+    req.session.destroy();
+    res.send({ message: 'Logout successful' });
+  } catch (error) {
+    res.status(400).send(error);
+  }
+};
+
+exports.getSession = async (req, res) => {
+  res.json(req.session)
 }

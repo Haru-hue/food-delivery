@@ -6,8 +6,10 @@ import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import Footer from './components/Footer'
+import LoginRegister from "./layouts/LoginRegister";
 
 function App() {
+  const [name, setName] = useState('')
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems") || "[]")
   );
@@ -72,7 +74,7 @@ function App() {
 
   return (
     <Router basename="/">
-      <Navbar cartItems={cartItems} totalItems={totalItems} />
+      <Navbar totalItems={totalItems} name={name}/>
       <Routes>
         <Route path="/" element={<Home />} exact />
         <Route
@@ -94,6 +96,7 @@ function App() {
           }
           exact
         />
+        <Route path="/login" element={<LoginRegister setName={setName}/>}/>
       </Routes>
       <Footer/>
     </Router>
