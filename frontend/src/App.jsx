@@ -7,12 +7,41 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState, useMemo, useEffect } from "react";
 import Footer from './components/Footer'
 import LoginRegister from "./layouts/LoginRegister";
+import axios from "axios";
 
 function App() {
-  const [name, setName] = useState('')
+  const [name, setName] = useState(null);
+  const [gender, setGender] = useState(null)
+  const [loggedIn, setLoggedIn] = useState(false);
   const [cartItems, setCartItems] = useState(
     JSON.parse(localStorage.getItem("cartItems") || "[]")
   );
+
+  useEffect(() => {
+    const session = JSON.parse(localStorage.getItem('session'));
+    if (session) {
+      setGender(session.gender);
+      setName(session.name);
+      if (!loggedIn) {
+        setLoggedIn(true);
+      }
+    }
+  }, [loggedIn]);
+  // add empty dependency array here
+  
+  const handleLogout = () => {
+    axios.post('http://localhost:5000/logout', { withCredentials: true })
+      .then(response => {
+        localStorage.removeItem('session'); // remove session from localStorage
+        setName(null);
+        setLoggedIn(false); // set loggedIn state to false
+        navigate('/login');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+  
 
   const deleteCartItem = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
@@ -74,7 +103,7 @@ function App() {
 
   return (
     <Router basename="/">
-      <Navbar totalItems={totalItems} name={name}/>
+      <Navbar totalItems={totalItems} name={name} loggedIn={loggedIn} gender={gender} handleLogout={handleLogout}/>
       <Routes>
         <Route path="/" element={<Home />} exact />
         <Route
@@ -96,7 +125,7 @@ function App() {
           }
           exact
         />
-        <Route path="/login" element={<LoginRegister setName={setName}/>}/>
+        <Route path="/login" element={<LoginRegister setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>}/>
       </Routes>
       <Footer/>
     </Router>

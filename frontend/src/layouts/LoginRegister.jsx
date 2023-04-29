@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Login, Register } from "../components/LoginRegisterModule";
 
-export default function LoginRegister({ setName }) {
+export default function LoginRegister({ setName, setLoggedIn, setGender }) {
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(true);
 
@@ -26,8 +26,8 @@ export default function LoginRegister({ setName }) {
                     <button className="button" onClick={handleRegisterClick}>Register</button>
                 </div>
             </div>
-            {showLogin && (<Login setName={setName}/>)}
-            {showRegister && (<Register setName={setName}/>)}
+            {showLogin && (<Login setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>)}
+            {showRegister && (<Register setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>)}
         </div>
     </main>
   );

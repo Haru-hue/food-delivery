@@ -110,7 +110,7 @@ export const Register = () => {
   );
 }
 
-export const Login = ({ setName }) => {
+export const Login = ({ setName, setLoggedIn, setGender }) => {
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -125,7 +125,10 @@ export const Login = ({ setName }) => {
             withCredentials: true // include session cookie in headers
           });
           console.log('Server response:', response.data);
-          setName(response.data.user.firstName);
+          setName(response.data.session.name); // set name in state
+          setGender(response.data.session.gender)
+          setLoggedIn(true); // set loggedIn state to true
+          localStorage.setItem('session', JSON.stringify(response.data.session));
           navigate('/');
         } catch (error) {
           console.error('Error:', error);

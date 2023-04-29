@@ -135,8 +135,9 @@ exports.getUser =  async (req, res) => {
       throw new Error('Incorrect password');
     }
     req.session.name = user.firstName;
+    req.session.gender = user.gender
     const token = jwt.sign({ _id: user._id }, 'mysecretkey');
-    res.send({ user, token, message: 'Login succesful'});
+    res.send({ token, message: 'Login succesful', session: req.session });
   } catch (error) {
     res.status(400).send(error);
   }
