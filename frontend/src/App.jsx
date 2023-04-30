@@ -12,36 +12,56 @@ import axios from "axios";
 function App() {
   const [name, setName] = useState(null);
   const [gender, setGender] = useState(null)
+  const [user, setUser] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false);
-  const [cartItems, setCartItems] = useState(
-    JSON.parse(localStorage.getItem("cartItems") || "[]")
-  );
+  const [cartItems, setCartItems] = useState([])
 
   useEffect(() => {
-    const session = JSON.parse(localStorage.getItem('session'));
-    if (session) {
-      setGender(session.gender);
-      setName(session.name);
-      if (!loggedIn) {
-        setLoggedIn(true);
+    const sessionStr = localStorage.getItem('session');
+    if (sessionStr) {
+      try {
+        const session = JSON.parse(sessionStr);
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (session) {
+          setUser(currentUser);
+          setGender(currentUser.gender);
+          setName(currentUser.firstName);
+          if (!loggedIn) {
+            setLoggedIn(true);
+          }
+        }
+        console.log(name);
+        console.log(gender);
+      } catch (error) {
+        console.error('Invalid session:', sessionStr);
+        localStorage.removeItem('session'); // remove invalid session from storage
       }
+    } else {
+      setUser(null);
+      setGender(null);
+      setName(null);
+      setLoggedIn(false);
+      setCartItems([]);
     }
   }, [loggedIn]);
-  // add empty dependency array here
+  
   
   const handleLogout = () => {
     axios.post('http://localhost:5000/logout', { withCredentials: true })
       .then(response => {
-        localStorage.removeItem('session'); // remove session from localStorage
+        setUser(null);
+        setGender(null);
         setName(null);
-        setLoggedIn(false); // set loggedIn state to false
-        navigate('/login');
+        setLoggedIn(false);
+        setCartItems([]);
+        localStorage.removeItem('session'); // remove invalid session from storage
+        localStorage.removeItem('currentUser'); // remove invalid session from storage
+        // navigate('/login');
       })
       .catch(error => {
         console.error('Error:', error);
       });
   };
-  
 
   const deleteCartItem = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
@@ -98,8 +118,34 @@ function App() {
   );
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (user) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      currentUser.cart = cartItems;
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+      console.log(currentUser.cart)
+      axios.put(`http://localhost:5000/${user._id}/cart`, { cart: cartItems })
+        .then(response => {
+          console.log('User cart updated:', response.data);
+        })
+        .catch(error => {
+          console.error('Error updating user cart:', error);
+        });
+    }
+  }, [cartItems, user]);
+
+  useEffect(() => {
+    if (user) {
+      axios.get(`http://localhost:5000/${user._id}/cart`)
+        .then(response => {
+          setCartItems(response.data);
+        })
+        .catch(error => {
+          console.error('Error retrieving cart items:', error);
+        });
+    } else {
+      setCartItems([]);
+    }
+  }, [user]);
 
   return (
     <Router basename="/">

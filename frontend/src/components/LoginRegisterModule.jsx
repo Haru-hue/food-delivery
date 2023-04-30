@@ -117,30 +117,32 @@ export const Login = ({ setName, setLoggedIn, setGender }) => {
     const [password, setPassword] = useState('');
 
     async function getUser() {
-        try {
-          const response = await axios.post('http://localhost:5000/login', {
-            email,
-            password,
-          }, {
-            withCredentials: true // include session cookie in headers
-          });
-          console.log('Server response:', response.data);
-          setName(response.data.session.name); // set name in state
-          setGender(response.data.session.gender)
-          setLoggedIn(true); // set loggedIn state to true
-          localStorage.setItem('session', JSON.stringify(response.data.session));
-          navigate('/');
-        } catch (error) {
-          console.error('Error:', error);
-        }
+      try {
+        const response = await axios.post('http://localhost:5000/login', {
+          email,
+          password,
+        }, {
+          withCredentials: true // include session cookie in headers
+        });
+        console.log('Server response:', response.data);
+        setName(response.data.user.firstName); // set name in state
+        setGender(response.data.user.gender)
+        setLoggedIn(true); // set loggedIn state to true
+        localStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        localStorage.setItem('session', JSON.stringify(response.data.session));
+        navigate('/');
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
+    
   
     const handleSubmit = (event) => {
       event.preventDefault();
-      console.log('Email:', email);
-      console.log('Password:', password);
+      console.log('email:', email);
+      console.log('password:', password);
 
-        getUser()
+      getUser()
     };
   
     return (

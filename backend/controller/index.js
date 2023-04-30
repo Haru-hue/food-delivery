@@ -126,32 +126,88 @@ exports.addNewUser = async (req, res) => {
 
 exports.getUser =  async (req, res) => {
   try {
-    const user = await userSchema.findOne({ email: req.body.email });
+    const { email, password } = req.body;
+    const user = await userSchema.findOne({ email });
     if (!user) {
-      throw new Error('User not found');
+       return res.status(401).json({ message: 'Invalid email or password' });
     }
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
-    if (!isMatch) {
-      throw new Error('Incorrect password');
+      // Check if password is correct
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+     if (!isPasswordMatch) {
+      return res.status(401).json({ message: 'Invalid email or password' });
     }
-    req.session.name = user.firstName;
-    req.session.gender = user.gender
-    const token = jwt.sign({ _id: user._id }, 'mysecretkey');
-    res.send({ token, message: 'Login succesful', session: req.session });
+      // Generate access token
+    const token = jwt.sign({ id: user._id }, 'mysecretkey');
+    res.status(200).json({ user, token, message: 'Login successful', session: req.session });
   } catch (error) {
-    res.status(400).send(error);
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
 exports.logout = async (req, res) => {
   try {
     req.session.destroy();
-    res.send({ message: 'Logout successful' });
+    res.status(200).json({ message: 'Logout successful' });
   } catch (error) {
-    res.status(400).send(error);
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 exports.getSession = async (req, res) => {
   res.json(req.session)
+}
+
+exports.isAuthenticated = async (req, res, next) => {
+  try {
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const user = await userSchema.findById(userId);
+    if (!user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.addUserCart = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const newCartItems = req.body.cart;
+
+    console.log('userId:', userId);
+    console.log('newCartItems:', newCartItems);
+
+    const updatedUser = await userSchema
+      .findByIdAndUpdate(userId, { cart: newCartItems }, { new: true })
+      .populate('cart');
+
+    if (updatedUser) {
+      res.json({ message: 'Cart updated successfully!'});
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error updating user cart');
+  }
+};
+
+exports.getCart = async (req,res) => {
+  try {
+    const userId = req.params.id
+    const user = await userSchema.findById(userId).select('cart');
+    const cartItems = user.cart;
+    res.json(cartItems);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error getting cart');
+  }
 }

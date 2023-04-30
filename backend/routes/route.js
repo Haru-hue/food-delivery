@@ -24,6 +24,8 @@ router.post('/add-category', controller.addCategory)
 router.post('/register', controller.addNewUser)
 router.post('/login', controller.getUser)
 router.post('/logout', controller.logout);
-router.get('/session', controller.getSession)
+router.get('/:id/cart', controller.getCart)
+router.put('/:id/cart', controller.addUserCart)
+// router.get('/session', controller.getSession)
 
 module.exports = router;

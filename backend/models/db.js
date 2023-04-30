@@ -13,7 +13,7 @@ const connectToMongoose = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    return console.log('Connected to MongoDB');
+    return console.log('Connected to MongoDB: ', MONGODB_URI);
   } catch (err) {
     return console.error('Error connecting to MongoDB', err);
   }
