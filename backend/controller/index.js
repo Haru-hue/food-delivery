@@ -181,10 +181,6 @@ exports.addUserCart = async (req, res) => {
   try {
     const userId = req.params.id;
     const newCartItems = req.body.cart;
-
-    console.log('userId:', userId);
-    console.log('newCartItems:', newCartItems);
-
     const updatedUser = await userSchema
       .findByIdAndUpdate(userId, { cart: newCartItems }, { new: true })
       .populate('cart');

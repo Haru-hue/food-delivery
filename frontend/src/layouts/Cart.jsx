@@ -10,10 +10,10 @@ const Cart = ({
   setItemQuantity,
 }) => {
   const itemsInCart = cartItems.map((item) => {
-    if (!item) {
+    if (!item || !item.vendor) {
       return null;
     }
-
+  
     return (
       <CartItem
         key={item._id}
@@ -31,6 +31,8 @@ const Cart = ({
       />
     );
   });
+  
+  console.log(cartItems)
 
   return (
     <main className="container pt-10">

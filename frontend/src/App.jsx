@@ -14,7 +14,11 @@ function App() {
   const [gender, setGender] = useState(null)
   const [user, setUser] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false);
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(() => {
+    const savedCartItems = localStorage.getItem('cartItems');
+    return savedCartItems ? JSON.parse(savedCartItems) : [];
+  });
+  
 
   useEffect(() => {
     const sessionStr = localStorage.getItem('session');
@@ -118,34 +122,31 @@ function App() {
   );
 
   useEffect(() => {
+    const savedCartItems = localStorage.getItem('cartItems');
+    if (savedCartItems) {
+      setCartItems(JSON.parse(savedCartItems));
+    }
+  }, []); 
+
+  useEffect(() => {
     if (user) {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      currentUser.cart = cartItems;
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      console.log(currentUser.cart)
-      axios.put(`http://localhost:5000/${user._id}/cart`, { cart: cartItems })
+      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+      const updatedUser = { ...currentUser, cart: cartItems };
+  
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  
+      axios.put(`http://localhost:5000/${updatedUser._id}/cart`, { cart: cartItems })
         .then(response => {
           console.log('User cart updated:', response.data);
         })
         .catch(error => {
           console.error('Error updating user cart:', error);
         });
+    } else {
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }
   }, [cartItems, user]);
-
-  useEffect(() => {
-    if (user) {
-      axios.get(`http://localhost:5000/${user._id}/cart`)
-        .then(response => {
-          setCartItems(response.data);
-        })
-        .catch(error => {
-          console.error('Error retrieving cart items:', error);
-        });
-    } else {
-      setCartItems([]);
-    }
-  }, [user]);
 
   return (
     <Router basename="/">
