@@ -1,15 +1,16 @@
+import { useContext, useMemo } from "react";
 import CartItem from "../components/CartItem";
 import { line } from "./Menu";
+import { AppContext } from "../App";
 
-const Cart = ({
-  cartItems,
-  deleteCartItem,
-  totalPrice,
-  totalItems,
-  updateItemQuantity,
-  setItemQuantity,
-}) => {
-  const itemsInCart = cartItems.map((item) => {
+const Cart = () => {
+  const { state, totalItems } = useContext(AppContext)
+  const totalPrice = useMemo(
+    () => state.cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
+    [state.cartItems]
+  );
+
+  const itemsInCart = state.cartItems.map((item) => {
     if (!item || !item.vendor) {
       return null;
     }
@@ -25,15 +26,10 @@ const Cart = ({
         quantity={item.quantity}
         totalPrice={item.price * item.count}
         count={item.count}
-        deleteCartItem={deleteCartItem}
-        updateItemQuantity={updateItemQuantity}
-        setItemQuantity={setItemQuantity}
       />
     );
   });
   
-  console.log(cartItems)
-
   return (
     <main className="container pt-10">
       <h1 className="text-center title-font text-4xl pb-3">

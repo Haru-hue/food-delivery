@@ -1,23 +1,29 @@
 import axios from "axios";
 import ff from "../assets/fast-food.png"
-import { useEffect, useState } from "react";
+import { useMemo, useState, useLayoutEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
 import { Link } from "react-router-dom";
+import { AppContext } from "../App";
 
 export const line = <div className="w-full border-b border-gray-300"></div>;
 
-const Menu = ({ handleClick }) => {
+const Menu = () => {
+  const { state, dispatch } = useContext(AppContext)
   const [menu, setMenu] = useState([]);
   const [vendors, setVendors] = useState([]);
   const [productId, setProductId] = useState('');
   const [allItems, setAllItems] = useState(true)
   const [active, setActive] = useState(false)
+  const [sorted, setSorted] = useState('');
+
+  const sortedMenu = useMemo(() => {
+    
+  })
 
   async function getMenu() {
     try {
       const response = await axios.get("http://localhost:5000/menu");
-      console.log(response)
       setMenu(response.data.allProducts);
     } catch (err) {
       console.log(err);
@@ -42,14 +48,29 @@ const Menu = ({ handleClick }) => {
     }
   }
 
-  useEffect(() => {
+  const handleClick = (newItem) => {
+    const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
+  
+    if (!itemOpt) {
+      dispatch({ type: 'SET_ITEMS', payload: [...state.cartItems, { ...newItem, quantity: 1 }] });
+    } else {
+      dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
+        if (item._id === newItem._id) {
+          return { ...item, quantity: item.quantity + 1 };
+        }
+        return item;
+      })});
+    }
+  };
+
+  useLayoutEffect(() => {
     if (allItems) { // fetch all products when showAllMenu is true
       getMenu();
     } else { // fetch products of selected vendor when showAllMenu is false
       getProducts(productId);
     }
     getVendors();
-  }, [allItems, productId]);
+  }, [allItems, productId])
 
   const displayMenu = menu.map((item) => {
     return (
@@ -108,6 +129,10 @@ const Menu = ({ handleClick }) => {
     )
   })
 
+  const handleSelect = (event) => {
+    setSelected(event.target.value)
+  }
+
   return (
     <main className="py-2 container">
       <div className="flex items-center justify-between">
@@ -115,10 +140,11 @@ const Menu = ({ handleClick }) => {
           <h1 className="font-bold text-3xl">Find the best foods</h1>
           <img src={ff} alt=""  className="w-10"/>
         </div>
-        <select name="" id="">
+        <select name="" id="" onChange={handleSelect}>
           <option value="default" selected>Sort by default</option>
-          <option value="rating">Sort by highest rating</option>
-          <option value="experience">Sort from lowest to highest</option>
+          <option value="rating">Sort by rating</option>
+          <option value="lowp">Price: Low to High</option>
+          <option value="highp">Price: Low to High</option>
         </select>
       </div>
       <div className="flex justify-center space-x-14 py-5">

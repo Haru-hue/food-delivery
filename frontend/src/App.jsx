@@ -1,24 +1,35 @@
-import Home from "./layouts/Home";
-import Menu from "./layouts/Menu";
 import "./App.scss";
-import Cart from "./layouts/Cart";
-import Navbar from "./components/Navbar";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
-import Footer from './components/Footer'
-import LoginRegister from "./layouts/LoginRegister";
+import { BrowserRouter as Router, Routes, Route, RouterProvider } from "react-router-dom";
+import { useState, useMemo, useEffect, useReducer, createContext } from "react";
+import router from './router'
 import axios from "axios";
 
-function App() {
-  const [name, setName] = useState(null);
-  const [gender, setGender] = useState(null)
-  const [user, setUser] = useState(null)
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [cartItems, setCartItems] = useState(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
-    return savedCartItems ? JSON.parse(savedCartItems) : [];
-  });
-  
+const initialState = {
+  name: null, 
+  gender: null, 
+  loggedIn: false,
+  user: null,
+  cartItems: localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : [],
+}
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'LOGIN':
+      return {...state, loggedIn: true, user: action.payload }
+    case 'LOGOUT':
+      return {...initialState}
+    case 'SET_ITEMS':
+      return {...state, cartItems: action.payload }
+    default:
+      return state
+  }
+}
+
+export const AppContext = createContext(null)
+
+function App({ children }) {
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const { name, gender, user, loggedIn, cartItems } = state;
 
   useEffect(() => {
     const sessionStr = localStorage.getItem('session');
@@ -27,104 +38,21 @@ function App() {
         const session = JSON.parse(sessionStr);
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if (session) {
-          setUser(currentUser);
-          setGender(currentUser.gender);
-          setName(currentUser.firstName);
-          if (!loggedIn) {
-            setLoggedIn(true);
-          }
+          dispatch({ type: 'LOGIN', payload: currentUser })
         }
-        console.log(name);
-        console.log(gender);
       } catch (error) {
         console.error('Invalid session:', sessionStr);
         localStorage.removeItem('session'); // remove invalid session from storage
       }
     } else {
-      setUser(null);
-      setGender(null);
-      setName(null);
-      setLoggedIn(false);
-      setCartItems([]);
+      dispatch({ type: 'LOGOUT' })
     }
   }, [loggedIn]);
-  
-  
-  const handleLogout = () => {
-    axios.post('http://localhost:5000/logout', { withCredentials: true })
-      .then(response => {
-        setUser(null);
-        setGender(null);
-        setName(null);
-        setLoggedIn(false);
-        setCartItems([]);
-        localStorage.removeItem('session'); // remove invalid session from storage
-        localStorage.removeItem('currentUser'); // remove invalid session from storage
-        // navigate('/login');
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
-
-  const deleteCartItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
-  };
-
-  const handleClick = (newItem) => {
-    setCartItems((prevItems) => {
-      const itemOpt = prevItems.find((item) => item._id === newItem._id);
-
-      if (!itemOpt) {
-        return [...prevItems, { ...newItem, quantity: 1 }];
-      }
-
-      return prevItems.map((item) => {
-        if (item._id === newItem._id) {
-          return { ...item, quantity: item.quantity + 1 };
-        }
-        return item;
-      });
-    });
-  };
-
-  const setItemQuantity = (id, quantity) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item._id !== id) return item;
-
-        return { ...item, quantity: Math.max(1, quantity) };
-      })
-    );
-  };
-
-  const updateItemQuantity = (id, value) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item._id !== id) return item;
-
-        return {
-          ...item,
-          quantity: Math.max(1, item.quantity + value),
-        };
-      })
-    );
-  };
-
-  const totalPrice = useMemo(
-    () => cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
-    [cartItems]
-  );
-
-  const totalItems = useMemo(
-    () => cartItems.reduce((acc, item) => acc + item.quantity, 0),
-    [cartItems]
-  );
 
   useEffect(() => {
     const savedCartItems = localStorage.getItem('cartItems');
     if (savedCartItems) {
-      setCartItems(JSON.parse(savedCartItems));
+        dispatch({ type: 'SET_ITEMS', payload: JSON.parse(savedCartItems) })
     }
   }, []); 
 
@@ -132,10 +60,8 @@ function App() {
     if (user) {
       const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
       const updatedUser = { ...currentUser, cart: cartItems };
-  
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  
       axios.put(`http://localhost:5000/${updatedUser._id}/cart`, { cart: cartItems })
         .then(response => {
           console.log('User cart updated:', response.data);
@@ -146,36 +72,18 @@ function App() {
     } else {
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }
-  }, [cartItems, user]);
+  }, [state.cartItems, user]);
+
+  const totalItems = useMemo(
+    () => state.cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    [state.cartItems]
+  );
+
 
   return (
-    <Router basename="/">
-      <Navbar totalItems={totalItems} name={name} loggedIn={loggedIn} gender={gender} handleLogout={handleLogout}/>
-      <Routes>
-        <Route path="/" element={<Home />} exact />
-        <Route
-          path="/menu"
-          element={<Menu handleClick={handleClick} />}
-          exact
-        />
-        <Route
-          path="/cart"
-          element={
-            <Cart
-              cartItems={cartItems}
-              updateItemQuantity={updateItemQuantity}
-              setItemQuantity={setItemQuantity}
-              deleteCartItem={deleteCartItem}
-              totalItems={totalItems}
-              totalPrice={totalPrice}
-            />
-          }
-          exact
-        />
-        <Route path="/login" element={<LoginRegister setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>}/>
-      </Routes>
-      <Footer/>
-    </Router>
+      <AppContext.Provider value={{ state, dispatch, totalItems }}>
+        <RouterProvider router={router}/>
+      </AppContext.Provider>
   );
 }
 

@@ -1,7 +1,30 @@
 import { Icon } from "@iconify/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AppContext } from "../App";
 
 export default function CartItem(props) {
+  const { state, dispatch } = useContext(AppContext)
+
+  const deleteCartItem = (id) => {
+    dispatch({type: 'SET_ITEMS', payload: state.cartItems.filter((item) => item._id !== id)})
+  };
+
+  const setItemQuantity = (id, quantity) => {
+    dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
+      if (item._id !== id) return item;
+
+      return { ...item, quantity: Math.max(1, quantity) };
+    })})
+  };
+
+  const updateItemQuantity = (id, value) => {
+    dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
+      if (item._id !== id) return item
+
+      return { ...item, quantity: Math.max(1, item.quantity + value) };
+    }) })
+  };
+
   return (
     <div className="border-2 border-solid border-gray-100 rounded-xl flex justify-between overflow-hidden items-center my-4">
       <div className="flex bg-gray-300 bg-opacity-10 backdrop-filter backdrop-blur items-center justify-between w-lg">
@@ -27,18 +50,18 @@ export default function CartItem(props) {
             min={1}
             value={props.quantity}
             onChange={(e) =>
-              props.setItemQuantity(props.id, parseInt(e.target.value, 10))
+              setItemQuantity(props.id, parseInt(e.target.value, 10))
             }
           />
           <button
             className="rounded-r-lg px-3 py-1 bg-orange text-white hover:bg-orange-300"
-            onClick={() => props.updateItemQuantity(props.id, 1)}
+            onClick={() => updateItemQuantity(props.id, 1)}
           >
             <span className="font-bold text-xl leading-none">+</span>
           </button>
         </div>
       </div>
-      <button onClick={() => props.deleteCartItem(props.id)}>
+      <button onClick={() => deleteCartItem(props.id)}>
         <Icon icon="ph:trash-bold" className="text-5xl text-orange"/>
       </button>
     </div>

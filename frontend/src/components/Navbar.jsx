@@ -2,8 +2,25 @@ import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import man from "../assets/man.png";
 import woman from "../assets/woman.png";
+import { useContext, useMemo } from "react";
+import { AppContext } from "../App";
 
-const Navbar = ({ totalItems, name, loggedIn, gender, handleLogout }) => {
+const Navbar = () => {
+  const { state, dispatch, totalItems } = useContext(AppContext)
+
+  const handleLogout = () => {
+    axios.post('http://localhost:5000/logout', { withCredentials: true })
+      .then(response => {
+        dispatch({ type: 'LOGOUT' })
+        localStorage.removeItem('session'); // remove invalid session from storage
+        localStorage.removeItem('currentUser'); // remove invalid session from storage
+        // navigate('/login');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  };
+
   return (
     <header className="container mb-4">
       <nav className="bg-black max-w-4xl mx-auto rounded-b-full">
@@ -30,8 +47,8 @@ const Navbar = ({ totalItems, name, loggedIn, gender, handleLogout }) => {
               </div>
             </div>
           </div>
-          <div className={`flex ${name === null ? 'items-center space-x-5' : 'items-baseline space-x-2'} text-white pt-1`}>
-          {!loggedIn ? (
+          <div className={`flex ${state.name === null ? 'items-center space-x-5' : 'items-baseline space-x-2'} text-white pt-1`}>
+          {!(state.loggedIn) ? (
                 <Link to='/login'>
                   <Icon icon="mdi:user-outline" className="text-3xl" />
                 </Link>
@@ -39,7 +56,7 @@ const Navbar = ({ totalItems, name, loggedIn, gender, handleLogout }) => {
                 <div className="flex items-center relative group">
                   <div className="flex-shrink-0">
                     <img
-                      src={gender === 'male' ? man : woman}
+                      src={state.gender === 'male' ? man : woman}
                       alt="avatar"
                       className="rounded-full h-10 w-10"
                     />
@@ -47,7 +64,7 @@ const Navbar = ({ totalItems, name, loggedIn, gender, handleLogout }) => {
                   <div className="ml-4">
                     <button className="focus:outline-none group-hover:text-orange">
                       <div className="text-white text-xl">
-                        {name}
+                        {state.name}
                       </div>
                     </button>
                     <div className="absolute z-10 mt-2 py-2 bg-white rounded-md shadow-lg invisible group-hover:visible">
