@@ -26,8 +26,8 @@ export default function LoginRegister({ setName, setLoggedIn, setGender }) {
                     <button className="button" onClick={handleRegisterClick}>Register</button>
                 </div>
             </div>
-            {showLogin && (<Login setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>)}
-            {showRegister && (<Register setName={setName} setLoggedIn={setLoggedIn} setGender={setGender}/>)}
+            {showLogin && (<Login/>)}
+            {showRegister && (<Register/>)}
         </div>
     </main>
   );

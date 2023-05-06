@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../App';
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -110,66 +111,73 @@ export const Register = () => {
   );
 }
 
-export const Login = ({ setName, setLoggedIn, setGender }) => {
-    const navigate = useNavigate();
+export const Login = () => {
+  const { state, dispatch } = useContext(AppContext);
+  const navigate = useNavigate();
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-    async function getUser() {
-      try {
-        const response = await axios.post('http://localhost:5000/login', {
+  async function getUser() {
+    try {
+      const response = await axios.post('http://localhost:5000/login',
+        {
           email,
           password,
-        }, {
-          withCredentials: true // include session cookie in headers
-        });
-        console.log('Server response:', response.data);
-        setName(response.data.user.firstName); // set name in state
-        setGender(response.data.user.gender)
-        setLoggedIn(true); // set loggedIn state to true
-        localStorage.setItem('currentUser', JSON.stringify(response.data.user));
-        localStorage.setItem('session', JSON.stringify(response.data.session));
-        navigate('/');
-      } catch (error) {
-        console.error('Error:', error);
-      }
+        },
+        {
+          withCredentials: true, // include session cookie in headers
+        }
+      );
+      console.log('Server response:', response.data);
+      const { user } = response.data;
+      dispatch({ type: 'LOGIN', payload: { user, name: user.firstName, gender: user.gender } });
+      localStorage.setItem('currentUser', JSON.stringify(response.data.user));
+      localStorage.setItem('session', JSON.stringify(response.data.session));
+      // navigate('/');
+    } catch (error) {
+      console.error('Error:', error);
     }
-    
-  
-    const handleSubmit = (event) => {
-      event.preventDefault();
-      console.log('email:', email);
-      console.log('password:', password);
+  }
 
-      getUser()
-    };
-  
-    return (
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">Email:</label>
-          <input
-            name='email'
-            type="email"
-            id="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password:</label>
-          <input
-            name='password'
-            type="password"
-            id="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    );
-}
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log('email:', email);
+    console.log('password:', password);
+    getUser();
+  };
+
+  useEffect(() => {
+    console.log('Name:', state.name);
+    console.log('Gender:', state.gender);
+  }, [state]);
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label htmlFor="email">Email:</label>
+        <input
+          name="email"
+          type="email"
+          id="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label htmlFor="password">Password:</label>
+        <input
+          name="password"
+          type="password"
+          id="password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          required
+        />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+  );
+};
+

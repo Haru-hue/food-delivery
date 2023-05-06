@@ -15,7 +15,10 @@ const initialState = {
 const reducer = (state, action) => {
   switch (action.type) {
     case 'LOGIN':
-      return {...state, loggedIn: true, user: action.payload }
+      return {...state, loggedIn: true, user: action.payload,
+          name: action.payload.name,
+          gender: action.payload.gender
+        }
     case 'LOGOUT':
       return {...initialState}
     case 'SET_ITEMS':
@@ -37,17 +40,22 @@ function App({ children }) {
       try {
         const session = JSON.parse(sessionStr);
         const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (session) {
-          dispatch({ type: 'LOGIN', payload: currentUser })
+        if (session && currentUser) {
+          const { user } = currentUser;
+          dispatch({
+            type: 'LOGIN',
+            payload: { user, name: user.firstName, gender: user.gender },
+          });
         }
       } catch (error) {
         console.error('Invalid session:', sessionStr);
         localStorage.removeItem('session'); // remove invalid session from storage
       }
     } else {
-      dispatch({ type: 'LOGOUT' })
+      dispatch({ type: 'LOGOUT' });
     }
-  }, [loggedIn]);
+  }, []);
+  
 
   useEffect(() => {
     const savedCartItems = localStorage.getItem('cartItems');
@@ -78,7 +86,6 @@ function App({ children }) {
     () => state.cartItems.reduce((acc, item) => acc + item.quantity, 0),
     [state.cartItems]
   );
-
 
   return (
       <AppContext.Provider value={{ state, dispatch, totalItems }}>

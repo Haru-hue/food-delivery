@@ -4,6 +4,7 @@ import man from "../assets/man.png";
 import woman from "../assets/woman.png";
 import { useContext, useMemo } from "react";
 import { AppContext } from "../App";
+import axios from "axios";
 
 const Navbar = () => {
   const { state, dispatch, totalItems } = useContext(AppContext)
