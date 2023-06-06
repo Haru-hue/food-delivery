@@ -4,10 +4,13 @@ import { useState, useMemo, useEffect, useReducer, createContext } from "react";
 import router from './router'
 import axios from "axios";
 
+// This should be a function called getInitialSate as `cartItems` need to be dynamic value
 const initialState = {
   name: null, 
   gender: null, 
+  // Logged in doesn't need to be stored, it can be "calculated" from your state
   loggedIn: false,
+  // I think you shouldn't have name and gender in the initial state as it's already part of the user object
   user: null,
   cartItems: localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : [],
 }
@@ -35,6 +38,15 @@ function App({ children }) {
   const { name, gender, user, loggedIn, cartItems } = state;
 
   useEffect(() => {
+    // Values reading from localStorage should be treated carefully
+    // 1. Get the value from the storage
+    // 2. Check if the value is not null
+    // 3. If the value is present parse it in a try catch
+    //
+    // This should be done for every item you read from the localstorage
+    // Perhaps you can create a function called safeGetItem
+    // or you could also create a class which does safe parsing operations
+    // on localstorage using the provided key
     const sessionStr = localStorage.getItem('session');
     if (sessionStr) {
       try {
