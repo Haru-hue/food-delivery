@@ -132,6 +132,10 @@ export const Login = () => {
       console.log('Server response:', response.data);
       const { user } = response.data;
       dispatch({ type: 'LOGIN', payload: { user, name: user.firstName, gender: user.gender } });
+
+      // "LOGIN" action should save the session and user data.
+      // The reducer could also save the data to localstorage
+      // or you can create a custom hook which stores a state and does this automatically for you
       localStorage.setItem('currentUser', JSON.stringify(response.data.user));
       localStorage.setItem('session', JSON.stringify(response.data.session));
       // navigate('/');
