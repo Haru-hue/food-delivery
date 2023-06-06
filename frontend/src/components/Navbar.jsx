@@ -11,13 +11,8 @@ const Navbar = () => {
 
   const handleLogout = () => {
     axios.post('http://localhost:5000/logout', { withCredentials: true })
-      .then(response => {
+      .then(() => {
         dispatch({ type: 'LOGOUT' })
-        // Same here, as in "LoginRegisterModule":
-        // "LOGOUT" action in the reducer should handle this
-        // or a custom hook
-        localStorage.removeItem('session'); // remove invalid session from storage
-        localStorage.removeItem('currentUser'); // remove invalid session from storage
         // navigate('/login');
       })
       .catch(error => {
