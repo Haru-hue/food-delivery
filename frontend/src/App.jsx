@@ -1,5 +1,5 @@
 import "./App.scss";
-import { BrowserRouter as RouterProvider } from "react-router-dom";
+import { RouterProvider } from "react-router-dom";
 import { useMemo, useEffect, useReducer, createContext } from "react";
 import router from './router'
 import axios from "axios";
@@ -16,8 +16,8 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       // Save the session and user data to localStorage
-      // localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
-      // localStorage.setItem('session', JSON.stringify(action.payload.session));
+      localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
+      localStorage.setItem('session', JSON.stringify(action.payload.session));
 
       // Update the state with the user data
       return {

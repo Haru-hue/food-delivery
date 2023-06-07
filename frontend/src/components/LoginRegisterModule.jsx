@@ -147,8 +147,8 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    console.log('Name:', state.name);
-    console.log('Gender:', state.gender);
+    console.log('Name:', state.user?.firstName);
+    console.log('Gender:', state.user?.gender);
   }, [state]);
 
   return (
