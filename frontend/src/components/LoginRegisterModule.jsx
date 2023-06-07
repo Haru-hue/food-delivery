@@ -131,8 +131,8 @@ export const Login = () => {
       );
       console.log('Server response:', response.data);
       const { user } = response.data;
-      dispatch({ type: 'LOGIN', payload: { user } });
-      console.log(user)
+      dispatch({ type: 'LOGIN', payload: user });
+      console.log(state.cartItems)
       // navigate('/');
     } catch (error) {
       console.error('Error:', error);

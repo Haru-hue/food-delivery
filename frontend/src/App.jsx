@@ -7,7 +7,7 @@ import{ safeGetItem } from "./utils"
 
 const getInitialState = () => {
   return {
-    user: null,
+    user: JSON.parse(localStorage.getItem('currentUser') ?? null ),
     cartItems: [],
   };
 };
@@ -15,14 +15,16 @@ const getInitialState = () => {
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
+      const { cart, session, ...user } = action.payload 
+
       // Save the session and user data to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(action.payload.user));
-      localStorage.setItem('session', JSON.stringify(action.payload.session));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('session', JSON.stringify(session));
 
       // Update the state with the user data
       return {
         ...state,
-        user: action.payload,
+        user, cartItems: cart
       };
     case "LOGOUT":
       // Remove the user data from localStorage
@@ -48,21 +50,6 @@ function App() {
   const [state, dispatch] = useReducer(reducer, getInitialState());
   
   useEffect(() => {
-    const session = safeGetItem('session');
-    const currentUser = safeGetItem('currentUser');
-  
-    if (session && currentUser) {
-      const { user } = currentUser;
-      dispatch({
-        type: 'LOGIN',
-        payload: { user },
-      });
-    } else {
-      dispatch({ type: 'LOGOUT' });
-    }
-  }, []);
-
-  useEffect(() => {
     const savedCartItems = localStorage.getItem('cartItems');
     if (savedCartItems) {
         dispatch({ type: 'SET_ITEMS', payload: JSON.parse(savedCartItems) })
@@ -73,9 +60,10 @@ function App() {
     if (state.user && state.cartItems.length > 0) {
       const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
       const updatedUser = { ...currentUser, cart: state.cartItems };
+      console.log(updatedUser)
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       
-      axios.put(`http://localhost:5000/${updatedUser._id}/cart`, { cart: state.cartItems })
+      axios.put(`http://localhost:5000/${updatedUser.userId}/cart`, { cart: state.cartItems })
         .then(response => {
           console.log('User cart updated:', response.data);
         })

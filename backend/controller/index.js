@@ -138,7 +138,14 @@ exports.getUser =  async (req, res) => {
     }
       // Generate access token
     const token = jwt.sign({ id: user._id }, 'mysecretkey');
-    res.status(200).json({ user, token, message: 'Login successful', session: req.session });
+    const userData = {
+      userId: user._id,
+      name: user.firstName,
+      gender: user.gender,
+      email: user.email,
+      cart: user.cart,
+    }
+    res.status(200).json({ user: userData, token, message: 'Login successful', session: req.session });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Internal server error' });

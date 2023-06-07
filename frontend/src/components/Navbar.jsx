@@ -8,7 +8,7 @@ import axios from "axios";
 
 const Navbar = () => {
   const { state, dispatch, totalItems } = useContext(AppContext)
-  console.log(state.user)
+
   const handleLogout = () => {
     axios.post('http://localhost:5000/logout', { withCredentials: true })
       .then(() => {
@@ -47,7 +47,7 @@ const Navbar = () => {
             </div>
           </div>
           <div className={`flex ${state.user === null ? 'items-center space-x-5' : 'items-baseline space-x-2'} text-white pt-1`}>
-          {!(state.user?.firstName) ? (
+          {!(state.user?.name) ? (
                 <Link to='/login'>
                   <Icon icon="mdi:user-outline" className="text-3xl" />
                 </Link>
@@ -63,7 +63,7 @@ const Navbar = () => {
                   <div className="ml-4">
                     <button className="focus:outline-none group-hover:text-orange">
                       <div className="text-white text-xl">
-                        {state.user?.firstName}
+                        {state.user?.name}
                       </div>
                     </button>
                     <div className="absolute z-10 mt-2 py-2 bg-white rounded-md shadow-lg invisible group-hover:visible">

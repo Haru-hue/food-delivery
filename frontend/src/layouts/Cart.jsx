@@ -5,6 +5,7 @@ import { AppContext } from "../App";
 
 const Cart = () => {
   const { state, totalItems } = useContext(AppContext)
+  console.log(state.cartItems)
   const totalPrice = useMemo(
     () => state.cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
     [state.cartItems]
