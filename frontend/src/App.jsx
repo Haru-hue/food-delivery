@@ -5,26 +5,52 @@ import router from './router'
 import axios from "axios";
 import{ safeGetItem } from "./utils"
 
+const createInitialState = () => ({
+  user: null,
+  cartItems: []
+})
+
 const getInitialState = () => {
-  return {
-    user: JSON.parse(localStorage.getItem('currentUser') ?? null ),
-    cartItems: [],
-  };
+  const userData = localStorage.getItem('currentUser')
+  const cartItemData = localStorage.getItem('cartItems')
+
+  if (userData === null && cartItems === null) {
+    return createInitialState()
+  }
+
+  try {
+    const user = JSON.parse(userData)
+    const cartItems = JSON.parse(cartItemData)
+
+    return {
+      user,
+      cartItems,
+    }
+  } catch(error) {
+    if (error instanceof Error) {
+      console.error(`Something went wrong: ${error.message}`)
+    }
+
+    console.error('Something went wrong during initial state parsing')
+    return createInitialState()
+  }
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      const { cart, session, ...user } = action.payload 
+      const { cart: cartItems, session, ...user } = action.payload 
 
       // Save the session and user data to localStorage
       localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
       localStorage.setItem('session', JSON.stringify(session));
 
       // Update the state with the user data
       return {
         ...state,
-        user, cartItems: cart
+        cartItems,
+        user,
       };
     case "LOGOUT":
       // Remove the user data from localStorage
@@ -35,6 +61,7 @@ const reducer = (state, action) => {
       return getInitialState();
     case "SET_ITEMS":
       // Update the state with the cart items
+      localStorage.setItem('cartItems', JSON.stringify(action.payload));
       return {
         ...state,
         cartItems: action.payload,
@@ -50,20 +77,10 @@ function App() {
   const [state, dispatch] = useReducer(reducer, getInitialState());
   
   useEffect(() => {
-    const savedCartItems = localStorage.getItem('cartItems');
-    if (savedCartItems) {
-        dispatch({ type: 'SET_ITEMS', payload: JSON.parse(savedCartItems) })
-    }
-  }, []); 
-
-  useEffect(() => {
-    if (state.user && state.cartItems.length > 0) {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser')) || {};
-      const updatedUser = { ...currentUser, cart: state.cartItems };
-      console.log(updatedUser)
-      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      
-      axios.put(`http://localhost:5000/${updatedUser.userId}/cart`, { cart: state.cartItems })
+    if (state.cartItems.length > 0) {      
+      // The port API url should be stored inside an env file and used everywhere
+      // Since you use axios, you can setup your axios client with default url, port, headers etc...
+      axios.put(`http://localhost:5000/${state.user.userId}/cart`, { cart: state.cartItems })
         .then(response => {
           console.log('User cart updated:', response.data);
         })
@@ -71,7 +88,7 @@ function App() {
           console.error('Error updating user cart:', error);
         });
     }
-  }, [state.cartItems, state.user]);
+  }, [state.cartItems]);
   
   const totalItems = useMemo(
     () => state.cartItems.reduce((acc, item) => acc + item.quantity, 0),
