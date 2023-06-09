@@ -49,9 +49,14 @@ const Menu = () => {
   }
 
   const handleClick = (newItem) => {
+    // This logic should happen here
     const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
   
     if (!itemOpt) {
+      // Try to make another action called "ADD_ITEM" which would only send the new item to the reducer
+      // Inside the reducer, you can build up your logic
+      // eg.:
+      // dispatch({ type: 'ADD_ITEM', payload: newItem }) <-- Nice and simple, keep your components clean
       dispatch({ type: 'SET_ITEMS', payload: [...state.cartItems, { ...newItem, quantity: 1 }] });
     } else {
       dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
