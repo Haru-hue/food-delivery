@@ -48,25 +48,25 @@ const Menu = () => {
     }
   }
 
-  const handleClick = (newItem) => {
-    // This logic should happen here
+  const handleClick = async (newItem) => {
     const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
   
     if (!itemOpt) {
-      // Try to make another action called "ADD_ITEM" which would only send the new item to the reducer
-      // Inside the reducer, you can build up your logic
-      // eg.:
-      // dispatch({ type: 'ADD_ITEM', payload: newItem }) <-- Nice and simple, keep your components clean
-      dispatch({ type: 'SET_ITEMS', payload: [...state.cartItems, { ...newItem, quantity: 1 }] });
+      // Add the new item to the cart
+      const updatedCart = [...state.cartItems, { ...newItem, quantity: 1 }];
+      dispatch({ type: 'SET_ITEMS', payload: updatedCart });
     } else {
-      dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
+      // Update the quantity of the existing item
+      const updatedCart = state.cartItems.map((item) => {
         if (item._id === newItem._id) {
           return { ...item, quantity: item.quantity + 1 };
         }
         return item;
-      })});
+      });
+      dispatch({ type: 'SET_ITEMS', payload: updatedCart });
     }
   };
+  
 
   useLayoutEffect(() => {
     if (allItems) { // fetch all products when showAllMenu is true

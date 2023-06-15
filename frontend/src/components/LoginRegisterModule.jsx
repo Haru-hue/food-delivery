@@ -131,8 +131,9 @@ export const Login = () => {
       );
       console.log('Server response:', response.data);
       const { user } = response.data;
+      const userCart = await axios.get(`http://localhost:5000/${user.userId}/cart`)
       dispatch({ type: 'LOGIN', payload: user });
-      console.log(state.cartItems)
+      dispatch({ type: 'SET_ITEMS', payload: userCart.data })
       // navigate('/');
     } catch (error) {
       console.error('Error:', error);
@@ -145,11 +146,6 @@ export const Login = () => {
     console.log('password:', password);
     getUser();
   };
-
-  useEffect(() => {
-    console.log('Name:', state.user?.firstName);
-    console.log('Gender:', state.user?.gender);
-  }, [state]);
 
   return (
     <form onSubmit={handleSubmit}>

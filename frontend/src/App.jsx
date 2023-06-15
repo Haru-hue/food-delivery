@@ -3,7 +3,6 @@ import { RouterProvider } from "react-router-dom";
 import { useMemo, useEffect, useReducer, createContext } from "react";
 import router from './router'
 import axios from "axios";
-import{ safeGetItem } from "./utils"
 
 const createInitialState = () => ({
   user: null,
@@ -14,7 +13,7 @@ const getInitialState = () => {
   const userData = localStorage.getItem('currentUser')
   const cartItemData = localStorage.getItem('cartItems')
 
-  if (userData === null && cartItems === null) {
+  if (userData === null && cartItemData === null) {
     return createInitialState()
   }
 
@@ -39,17 +38,14 @@ const getInitialState = () => {
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      const { cart: cartItems, session, ...user } = action.payload 
+      const { session, ...user } = action.payload 
 
       // Save the session and user data to localStorage
       localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.setItem('cartItems', JSON.stringify(cartItems));
       localStorage.setItem('session', JSON.stringify(session));
-
       // Update the state with the user data
       return {
         ...state,
-        cartItems,
         user,
       };
     case "LOGOUT":
@@ -65,6 +61,15 @@ const reducer = (state, action) => {
       return {
         ...state,
         cartItems: action.payload,
+      };
+      case "ADD_ITEM":
+      // Add the new item to the cartItems array
+      const newItem = action.payload;
+      const updatedCartItems = [...state.cartItems, newItem];
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      return {
+        ...state,
+        cartItems: updatedCartItems,
       };
     default:
       return state;

@@ -2,6 +2,8 @@ import { useContext, useMemo } from "react";
 import CartItem from "../components/CartItem";
 import { line } from "./Menu";
 import { AppContext } from "../App";
+import axios from "axios";
+axios
 
 const Cart = () => {
   const { state, totalItems } = useContext(AppContext)
@@ -12,20 +14,17 @@ const Cart = () => {
   );
 
   const itemsInCart = state.cartItems.map((item) => {
-    if (!item || !item.vendor) {
-      return null;
-    }
-  
+    const product = item.product
     return (
       <CartItem
         key={item._id}
         id={item._id}
-        name={item.name}
-        image={item.image?.url}
-        price={item.price}
-        vendorName={item.vendor.name}
-        quantity={item.quantity}
-        totalPrice={item.price * item.count}
+        name={(product || item)?.name}
+        image={(item || product)?.image?.url}
+        price={item.price} // It only shows this
+        vendorName={(item || product)?.vendor?.name}
+        quantity={item.quantity} // And this
+        totalPrice={item.price * item.count} //Also this
         count={item.count}
       />
     );

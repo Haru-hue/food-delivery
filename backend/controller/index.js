@@ -203,14 +203,20 @@ exports.addUserCart = async (req, res) => {
   }
 };
 
-exports.getCart = async (req,res) => {
+exports.getCart = async (req, res) => {
   try {
-    const userId = req.params.id
+    const userId = req.params.id;
     const user = await userSchema.findById(userId).select('cart');
     const cartItems = user.cart;
-    res.json(cartItems);
+    const productIds = cartItems.map(item => item._id);
+    const products = await ProductSchema.find({ _id: { $in: productIds } });
+    const mergedCartItems = cartItems.map(item => {
+      const product = products.find(product => product._id.toString() === item._id.toString());
+      return { ...item.toObject(), product };
+    });
+    res.json(mergedCartItems);
   } catch (error) {
     console.error(error);
     res.status(500).send('Error getting cart');
   }
-}
+};

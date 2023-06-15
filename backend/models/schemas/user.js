@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const cartSchema = new mongoose.Schema({
+const cartSchema = new mongoose.Schema([{
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product'
+    ref: 'Food'
   },
   quantity: {
     type: Number,
     default: 0
   },
   price: Number
-});
+}]);
 
 const userSchema = new mongoose.Schema({
   firstName: {

@@ -35,7 +35,7 @@ export default function CartItem(props) {
         </div>
         <p className="text-3xl font-bold">
           <span className="text-orange text-base">₦</span>
-          {props.price.toLocaleString()}.00
+          {props.price}.00
         </p>
         <div className="flex items-center justify-center space-x-0">
         <button
