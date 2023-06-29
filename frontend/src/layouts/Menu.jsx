@@ -1,5 +1,5 @@
 import axios from "axios";
-import ff from "../assets/fast-food.png"
+import ff from "../assets/fast-food.png";
 import { useMemo, useState, useLayoutEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
@@ -9,17 +9,15 @@ import { AppContext } from "../App";
 export const line = <div className="w-full border-b border-gray-300"></div>;
 
 const Menu = () => {
-  const { state, dispatch } = useContext(AppContext)
+  const { state, dispatch } = useContext(AppContext);
   const [menu, setMenu] = useState([]);
   const [vendors, setVendors] = useState([]);
-  const [productId, setProductId] = useState('');
-  const [allItems, setAllItems] = useState(true)
-  const [active, setActive] = useState(false)
-  const [sorted, setSorted] = useState('');
+  const [productId, setProductId] = useState("");
+  const [allItems, setAllItems] = useState(true);
+  const [active, setActive] = useState(false);
+  const [sorted, setSorted] = useState("");
 
-  const sortedMenu = useMemo(() => {
-    
-  })
+  const sortedMenu = useMemo(() => {});
 
   async function getMenu() {
     try {
@@ -30,10 +28,10 @@ const Menu = () => {
     }
   }
 
-  async function getProducts (id) {
+  async function getProducts(id) {
     try {
       const response = await axios.get(`http://localhost:5000/vendor/${id}`);
-      setMenu(response.data)
+      setMenu(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -41,20 +39,20 @@ const Menu = () => {
 
   async function getVendors() {
     try {
-      const response = await axios.get("http://localhost:5000/vendors")
+      const response = await axios.get("http://localhost:5000/vendors");
       setVendors(response.data);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   }
 
   const handleClick = async (newItem) => {
     const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
-  
+
     if (!itemOpt) {
       // Add the new item to the cart
       const updatedCart = [...state.cartItems, { ...newItem, quantity: 1 }];
-      dispatch({ type: 'SET_ITEMS', payload: updatedCart });
+      dispatch({ type: "SET_ITEMS", payload: updatedCart });
     } else {
       // Update the quantity of the existing item
       const updatedCart = state.cartItems.map((item) => {
@@ -63,19 +61,20 @@ const Menu = () => {
         }
         return item;
       });
-      dispatch({ type: 'SET_ITEMS', payload: updatedCart });
+      dispatch({ type: "SET_ITEMS", payload: updatedCart });
     }
   };
-  
 
   useLayoutEffect(() => {
-    if (allItems) { // fetch all products when showAllMenu is true
+    if (allItems) {
+      // fetch all products when showAllMenu is true
       getMenu();
-    } else { // fetch products of selected vendor when showAllMenu is false
+    } else {
+      // fetch products of selected vendor when showAllMenu is false
       getProducts(productId);
     }
     getVendors();
-  }, [allItems, productId])
+  }, [allItems, productId]);
 
   const displayMenu = menu.map((item) => {
     return (
@@ -122,40 +121,52 @@ const Menu = () => {
 
   const handleId = (id) => {
     console.log(id);
-    setAllItems(false)
+    setAllItems(false);
     setProductId(id);
     getProducts(id);
     // setActive(true)
-  }
+  };
 
   const allVendors = vendors.map((item) => {
     return (
-      <button key={item._id} onClick={() =>{ handleId(item._id)}}>{item.name}</button>
-    )
-  })
+      <button
+        key={item._id}
+        onClick={() => {
+          handleId(item._id);
+        }}
+      >
+        {item.name}
+      </button>
+    );
+  });
 
   const handleSelect = (event) => {
-    setSelected(event.target.value)
-  }
+    setSelected(event.target.value);
+  };
 
   return (
     <main className="py-2 container">
       <div className="flex items-center justify-between">
         <div className="flex items-baseline space-x-5">
           <h1 className="font-bold text-3xl">Find the best foods</h1>
-          <img src={ff} alt=""  className="w-10"/>
+          <img src={ff} alt="" className="w-10" />
         </div>
         <select name="" id="" onChange={handleSelect}>
-          <option value="default" selected>Sort by default</option>
+          <option value="default" selected>
+            Sort by default
+          </option>
           <option value="rating">Sort by rating</option>
           <option value="lowp">Price: Low to High</option>
           <option value="highp">Price: Low to High</option>
         </select>
       </div>
       <div className="flex justify-center space-x-14 py-5">
-        <button onClick={() => setAllItems(true)}
-          className={`px-10 py-2 ${active ? 'bg-gray-300': ''}`}
-        >All</button>
+        <button
+          onClick={() => setAllItems(true)}
+          className={`px-10 py-2 ${active ? "bg-gray-300" : ""}`}
+        >
+          All
+        </button>
         `{allVendors}
       </div>
       <div className="grid grid-cols-3 gap-3 px-48">{displayMenu}</div>

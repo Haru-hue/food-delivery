@@ -3,34 +3,50 @@ import { useState, useEffect, useContext } from "react";
 import { AppContext } from "../App";
 
 export default function CartItem(props) {
-  const { state, dispatch } = useContext(AppContext)
+  const { state, dispatch } = useContext(AppContext);
 
   const deleteCartItem = (id) => {
-    dispatch({type: 'SET_ITEMS', payload: state.cartItems.filter((item) => item._id !== id)})
+    dispatch({
+      type: "SET_ITEMS",
+      payload: state.cartItems.filter((item) => item._id !== id),
+    });
   };
 
   const setItemQuantity = (id, quantity) => {
-    dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
-      if (item._id !== id) return item;
+    dispatch({
+      type: "SET_ITEMS",
+      payload: state.cartItems.map((item) => {
+        if (item._id !== id) return item;
 
-      return { ...item, quantity: Math.max(1, quantity) };
-    })})
+        return { ...item, quantity: Math.max(1, quantity) };
+      }),
+    });
   };
 
   const updateItemQuantity = (id, value) => {
-    dispatch({ type: 'SET_ITEMS', payload: state.cartItems.map((item) => {
-      if (item._id !== id) return item
+    dispatch({
+      type: "SET_ITEMS",
+      payload: state.cartItems.map((item) => {
+        if (item._id !== id) return item;
 
-      return { ...item, quantity: Math.max(1, item.quantity + value) };
-    }) })
+        return { ...item, quantity: Math.max(1, item.quantity + value) };
+      }),
+    });
   };
 
   return (
     <div className="border-2 border-solid border-gray-100 rounded-xl flex justify-between overflow-hidden items-center my-4">
-      <div className="flex bg-gray-300 bg-opacity-10 backdrop-filter backdrop-blur items-center justify-between w-lg">
-        <img src={props.image} alt={props.name} className="w-96 h-48 rounded-2xl p-2 object-cover"/>
+      <div className="flex bg-gray-300 bg-opacity-10 backdrop-filter backdrop-blur items-center justify-between w-lg px-10 py-4">
+        <div className="w-14 h-14 rounded-full border-2 border-orange flex justify-center cursor-pointer" onClick={() => props.onClick(props.id)}>
+          {props.isClicked && <div className="w-10 h-10 rounded-full bg-orange self-center"></div>}
+        </div>
+        <img
+          src={props.image}
+          alt={props.name}
+          className="w-96 h-48 rounded-2xl p-2 object-cover"
+        />
         <div className="flex flex-col space-y-2">
-          <h1 className="font-bold text-3xl">{props.name}</h1>
+          <h1 className="font-bold text-2xl w-[175px]">{props.name}</h1>
           <p className="text-gray text-sm">{props.vendorName}</p>
         </div>
         <p className="text-3xl font-bold">
@@ -38,7 +54,7 @@ export default function CartItem(props) {
           {props.price}.00
         </p>
         <div className="flex items-center justify-center space-x-0">
-        <button
+          <button
             className="rounded-l-lg px-3 py-1 bg-orange text-white hover:bg-orange-300"
             onClick={() => props.updateItemQuantity(props.id, -1)}
           >
@@ -61,8 +77,8 @@ export default function CartItem(props) {
           </button>
         </div>
       </div>
-      <button onClick={() => deleteCartItem(props.id)}>
-        <Icon icon="ph:trash-bold" className="text-5xl text-orange"/>
+      <button onClick={() => deleteCartItem(props.id)} className="pr-24">
+        <Icon icon="ph:trash-bold" className="text-6xl text-orange" />
       </button>
     </div>
   );

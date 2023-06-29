@@ -82,7 +82,7 @@ function App() {
   const [state, dispatch] = useReducer(reducer, getInitialState());
   
   useEffect(() => {
-    if (state.cartItems.length > 0) {      
+    if (state.user) {      
       // The port API url should be stored inside an env file and used everywhere
       // Since you use axios, you can setup your axios client with default url, port, headers etc...
       axios.put(`http://localhost:5000/${state.user.userId}/cart`, { cart: state.cartItems })
@@ -92,6 +92,8 @@ function App() {
         .catch(error => {
           console.error('Error updating user cart:', error);
         });
+    } else {
+      dispatch({ type: "SET_ITEMS", payload: state.cartItems });
     }
   }, [state.cartItems]);
   

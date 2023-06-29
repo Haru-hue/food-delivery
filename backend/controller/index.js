@@ -210,9 +210,12 @@ exports.getCart = async (req, res) => {
     const cartItems = user.cart;
     const productIds = cartItems.map(item => item._id);
     const products = await ProductSchema.find({ _id: { $in: productIds } });
+    const vendorIds = products.map(product => product.vendor);
+    const vendors = await Vendor.find({ _id: { $in: vendorIds } });
     const mergedCartItems = cartItems.map(item => {
       const product = products.find(product => product._id.toString() === item._id.toString());
-      return { ...item.toObject(), product };
+      const vendor = vendors.find(vendor => vendor._id.toString() === product.vendor.toString());
+      return { ...item.toObject(), ...product.toObject(), vendor: { name: vendor.name } };
     });
     res.json(mergedCartItems);
   } catch (error) {
