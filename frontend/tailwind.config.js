@@ -9,7 +9,8 @@ module.exports = {
     
     extend: {
       colors: {
-        orange: "#F4572B"
+        orange: "#F4572B",
+        'orange-lighter': '#e67555',
       },
       width: {
         '500': '500px',

@@ -5,6 +5,7 @@ import Cart from "../layouts/Cart";
 import { Login, Register } from "../components/LoginRegisterModule";
 import LoginRegister from "../layouts/LoginRegister";
 import Root from "../routes/Root";
+import Checkout from "../components/Checkout";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
             {
                 path: 'register',
                 element: <Register/>
+            },
+            {
+                path: 'checkout',
+                element: <Checkout/>
             }
         ]
     }

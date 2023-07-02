@@ -56,13 +56,13 @@ export default function CartItem(props) {
         <div className="flex items-center justify-center space-x-0">
           <button
             className="rounded-l-lg px-3 py-1 bg-orange text-white hover:bg-orange-300"
-            onClick={() => props.updateItemQuantity(props.id, -1)}
+            onClick={() => updateItemQuantity(props.id, -1)}
           >
             <span className="font-bold text-xl leading-none">-</span>
           </button>
           <input
-            className="w-1/4 px-3 py-1 bg-orange text-white border-l border-r border-gray-200 text-center font-bold appearance-none"
-            type="number"
+            className="w-1/5 px-3 py-1 bg-orange text-white border-l border-r border-gray-200 text-center font-bold appearance-none"
+            type="text"
             min={1}
             value={props.quantity}
             onChange={(e) =>

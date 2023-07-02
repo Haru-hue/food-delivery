@@ -4,7 +4,7 @@ import { line } from "./Menu";
 import { AppContext } from "../App";
 
 const Cart = () => {
-  const { state, totalItems } = useContext(AppContext)
+  const { state, totalItems } = useContext(AppContext);
   const [clickedItems, setClickedItems] = useState([]);
 
   const handleClick = (item) => {
@@ -16,35 +16,34 @@ const Cart = () => {
       }
     });
   };
-  
 
-const totalPrice = useMemo(
-  () =>
-    clickedItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
-  [clickedItems]
-);
-
-const itemsInCart = state.cartItems.map((item) => {
-  const isClicked = clickedItems.includes(item);
-  const totalPrice = isClicked ? item.price * item.count : 0;
-
-  return (
-    <CartItem
-      key={item._id}
-      id={item._id}
-      name={item.name}
-      image={item.image?.url}
-      price={item.price}
-      vendorName={item.vendor?.name}
-      quantity={item.quantity}
-      totalPrice={totalPrice}
-      count={item.count}
-      onClick={() => handleClick(item)}
-      isClicked={isClicked}
-    />
+  const totalPrice = useMemo(
+    () =>
+      clickedItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
+    [clickedItems]
   );
-});
-  
+
+  const itemsInCart = state.cartItems.map((item) => {
+    const isClicked = clickedItems.includes(item);
+    const totalPrice = isClicked ? item.price * item.count : 0;
+
+    return (
+      <CartItem
+        key={item._id}
+        id={item._id}
+        name={item.name}
+        image={item.image?.url}
+        price={item.price}
+        vendorName={item.vendor?.name}
+        quantity={item.quantity}
+        totalPrice={totalPrice}
+        count={item.count}
+        onClick={() => handleClick(item)}
+        isClicked={isClicked}
+      />
+    );
+  });
+
   return (
     <main className="container pt-10">
       <h1 className="text-center title-font text-4xl pb-3">
@@ -61,7 +60,14 @@ const itemsInCart = state.cartItems.map((item) => {
         </p>
       </div>
       <div className="flex justify-center py-16">
-        <button className="px-72 py-10 bg-orange rounded-xl text-3xl text-white uppercase disabled">
+        <button
+          className={`px-72 py-10 bg-orange rounded-xl text-3xl text-white uppercase ${
+            clickedItems.length > 0
+              ? "active:cursor-pointer"
+              : "disabled:bg-orange-lighter cursor-not-allowed"
+          }`}
+          disabled={clickedItems.length === 0}
+        >
           Proceed to CheckOut
         </button>
       </div>
