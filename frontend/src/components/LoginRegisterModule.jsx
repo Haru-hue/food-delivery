@@ -131,7 +131,7 @@ export const Login = () => {
       );
       console.log('Server response:', response.data);
       const { user } = response.data;
-      const userCart = await axios.get(`http://localhost:5000/${user.userId}/cart`)
+      const userCart = await axios.get(`http://localhost:5000/${user._id}/cart`)
       dispatch({ type: 'LOGIN', payload: user });
       dispatch({ type: 'SET_ITEMS', payload: userCart.data })
       // navigate('/');

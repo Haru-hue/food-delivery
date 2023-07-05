@@ -8,36 +8,36 @@ import Root from "../routes/Root";
 import Checkout from "../components/Checkout";
 
 const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <Root/>,
-        children: [
-            {
-                index: true,
-                element: <Home/>,
-            },
-            {
-                path: 'menu',
-                element: <Menu/>
-            }, 
-            {
-                path: 'cart',
-                element: <Cart/>
-            },
-            {
-                path: 'login',
-                element: <Login/>
-            },
-            {
-                path: 'register',
-                element: <Register/>
-            },
-            {
-                path: 'checkout',
-                element: <Checkout/>
-            }
-        ]
-    }
-])
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "menu",
+        element: <Menu />,
+      },
+      {
+        path: "cart",
+        element: <Cart />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "register",
+        element: <Register />,
+      },
+    ],
+  },
+  {
+    path: "checkout",
+    element: <Checkout />,
+  },
+]);
 
-export default router
+export default router;

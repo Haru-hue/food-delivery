@@ -5,11 +5,11 @@ import React from "react"
 
 const Root = () => {
     return (
-        <>
+        <div class="flex flex-col h-screen justify-between">
             <Navbar/>
             <Outlet/>
             <Footer/>
-        </>
+        </div>
     )
 }
 

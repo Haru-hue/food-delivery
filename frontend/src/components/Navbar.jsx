@@ -7,16 +7,17 @@ import { AppContext } from "../App";
 import axios from "axios";
 
 const Navbar = () => {
-  const { state, dispatch, totalItems } = useContext(AppContext)
+  const { state, dispatch, totalItems } = useContext(AppContext);
 
   const handleLogout = () => {
-    axios.post('http://localhost:5000/logout', { withCredentials: true })
+    axios
+      .post("http://localhost:5000/logout", { withCredentials: true })
       .then(() => {
-        dispatch({ type: 'LOGOUT' })
+        dispatch({ type: "LOGOUT" });
         // navigate('/login');
       })
-      .catch(error => {
-        console.error('Error:', error);
+      .catch((error) => {
+        console.error("Error:", error);
       });
   };
 
@@ -41,42 +42,49 @@ const Navbar = () => {
                   Menu
                 </div>
               </Link>
-              <div className="hover:bg-gray-700 text-white px-3 py-2 rounded-md text-md font-medium">
-                Vendors
-              </div>
             </div>
           </div>
-          <div className={`flex ${state.user === null ? 'items-center space-x-5' : 'items-baseline space-x-2'} text-white pt-1`}>
-          {!(state.user?.name) ? (
-                <Link to='/login'>
-                  <Icon icon="mdi:user-outline" className="text-3xl" />
-                </Link>
-              ) : (
-                <div className="flex items-center relative group">
-                  <div className="flex-shrink-0">
-                    <img
-                      src={state.user?.gender === 'male' ? man : woman}
-                      alt="avatar"
-                      className="rounded-full h-10 w-10"
-                    />
-                  </div>
-                  <div className="ml-4">
-                    <button className="focus:outline-none group-hover:text-orange">
-                      <div className="text-white text-xl">
-                        {state.user?.name}
-                      </div>
+          <div
+            className={`flex ${
+              state.user === null
+                ? "items-center space-x-5"
+                : "items-baseline space-x-2"
+            } text-white pt-1`}
+          >
+            {!state.user?.firstName ? (
+              <Link to="/login">
+                <Icon icon="mdi:user-outline" className="text-3xl" />
+              </Link>
+            ) : (
+              <div className="flex items-center relative group">
+                <div className="flex-shrink-0">
+                  <img
+                    src={state.user?.gender === "male" ? man : woman}
+                    alt="avatar"
+                    className="rounded-full h-10 w-10"
+                  />
+                </div>
+                <div className="ml-4">
+                  <button className="focus:outline-none group-hover:text-orange">
+                    <div className="text-white text-xl">{state.user?.firstName}</div>
+                  </button>
+                  <div className="absolute z-10 mt-2 py-2 bg-white rounded-md shadow-lg invisible group-hover:visible">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 focus:outline-none"
+                      onClick={handleLogout}
+                    >
+                      Logout
                     </button>
-                    <div className="absolute z-10 mt-2 py-2 bg-white rounded-md shadow-lg invisible group-hover:visible">
-                      <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">
-                        Profile
-                      </Link>
-                      <button className="block px-4 py-2 text-gray-800 hover:bg-gray-100 focus:outline-none" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </div>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
             <Link to="/cart">
               <div className="relative inline-block">
                 <Icon icon="la:shopping-bag" className="text-3xl" />
@@ -87,7 +95,6 @@ const Navbar = () => {
                 </div>
               </div>
             </Link>
-            
           </div>
         </div>
       </nav>

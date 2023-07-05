@@ -1,7 +1,8 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import CartItem from "../components/CartItem";
 import { line } from "./Menu";
 import { AppContext } from "../App";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { state, totalItems } = useContext(AppContext);
@@ -22,6 +23,8 @@ const Cart = () => {
       clickedItems.reduce((acc, item) => acc + item.quantity * item.price, 0),
     [clickedItems]
   );
+
+  console.log(clickedItems, totalPrice);
 
   const itemsInCart = state.cartItems.map((item) => {
     const isClicked = clickedItems.includes(item);
@@ -44,6 +47,8 @@ const Cart = () => {
     );
   });
 
+  const isActive = clickedItems.length > 0;
+
   return (
     <main className="container pt-10">
       <h1 className="text-center title-font text-4xl pb-3">
@@ -60,16 +65,21 @@ const Cart = () => {
         </p>
       </div>
       <div className="flex justify-center py-16">
-        <button
-          className={`px-72 py-10 bg-orange rounded-xl text-3xl text-white uppercase ${
-            clickedItems.length > 0
-              ? "active:cursor-pointer"
-              : "disabled:bg-orange-lighter cursor-not-allowed"
-          }`}
-          disabled={clickedItems.length === 0}
+        <Link
+          to={isActive ? "/checkout" : ""}
+          state={{ clickedItems: clickedItems, totalPrice: totalPrice }}
         >
-          Proceed to CheckOut
-        </button>
+          <button
+            className={`px-72 py-10 bg-orange rounded-xl text-3xl text-white uppercase ${
+              isActive
+                ? "active:cursor-pointer"
+                : "disabled:bg-orange-lighter cursor-not-allowed"
+            }`}
+            disabled={!isActive}
+          >
+            Proceed to CheckOut
+          </button>
+        </Link>
       </div>
     </main>
   );
