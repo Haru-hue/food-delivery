@@ -26,6 +26,6 @@ router.post('/login', controller.getUser)
 router.post('/logout', controller.logout);
 router.get('/:id/cart', controller.getCart)
 router.put('/:id/cart', controller.addUserCart)
-// router.get('/session', controller.getSession)
+// router.post('/mail', controller.sendMail)
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { useState, useEffect, useContext } from "react";
+import { useContext } from "react";
 import { AppContext } from "../App";
 
 export default function CartItem(props) {
@@ -51,7 +51,7 @@ export default function CartItem(props) {
         </div>
         <p className="text-3xl font-bold">
           <span className="text-orange text-base">₦</span>
-          {props.price}.00
+          {props.price.toLocaleString()}.00
         </p>
         <div className="flex items-center justify-center space-x-0">
           <button

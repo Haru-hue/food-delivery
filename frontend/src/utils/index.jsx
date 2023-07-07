@@ -1,7 +1,35 @@
 import axios from "axios";
-import { useState } from "react";
+import emailjs from "@emailjs/browser";
+
+export const sendReceiptEmail = (userName, items, deliveryFees, total, deliveryAddress, recipientEmail) => {
+
+  const templateParams = {
+    user_name: userName,
+    items: items,
+    delivery_fees: deliveryFees,
+    total_price: total,
+    delivery_address: deliveryAddress,
+    to_email: recipientEmail,
+  };
+
+  emailjs.send(
+    serviceKey,
+    templateKey,
+    templateParams,
+    emailKey
+  )
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.error("Error sending email:", error);
+    });
+};
 
 const publicKey = import.meta.env.VITE_API_KEY;
+const serviceKey = import.meta.env.VITE_SERVICE_KEY
+const templateKey = import.meta.env.VITE_TEMPLATE_KEY
+const emailKey = import.meta.env.VITE_EMAIL_KEY
 
 export const hallsData = [
   {
@@ -29,8 +57,6 @@ export const createTransaction = async (
   email,
   amount,
   callbackUrl,
-  onSuccess,
-  onFailure
 ) => {
   try {
     const response = await axios.post(
@@ -45,19 +71,23 @@ export const createTransaction = async (
     );
     const data = response.data;
     if (data.status) {
-      // Redirect to the authorization_url
+      localStorage.setItem("reference", JSON.stringify(data.data.reference));
       window.location = data.data.authorization_url;
       if (onSuccess) onSuccess();
+      return true
     } else {
       // Handle error
       console.error(data.message);
       if (onFailure) onFailure(data.message);
+      return false
     }
   } catch (error) {
     console.error(error);
     if (onFailure) onFailure(error);
+    return false
   }
 };
+
 
 export const verifyTransaction = async (reference) => {
   try {
@@ -126,7 +156,6 @@ export const AnimatedCheckMark = () => {
 
 export const AnimatedWrongMark = () => {
   return (
-    <div className="animation-ctn">
       <div className="icon icon--order-success">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -168,6 +197,6 @@ export const AnimatedWrongMark = () => {
           </g>
         </svg>
       </div>
-    </div>
+
   );
 };

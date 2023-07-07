@@ -1,23 +1,30 @@
-import { useState, useContext } from "react";
-import { createTransaction, hallsData } from "../utils";
+import { useState, useContext, useEffect } from "react";
+import { createTransaction, hallsData, sendReceiptEmail } from "../utils";
 import { AppContext } from "../App";
 import { useLocation, useNavigate } from "react-router-dom";
 // import { PaystackButton } from "react-paystack"
-
 
 const Checkout = () => {
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("creditCard");
   const [extraInfo, setExtraInfo] = useState("");
-  const { state } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
   const location = useLocation();
   const clickedItems = location.state?.clickedItems;
   const totalPrice = location.state?.totalPrice;
   const shippingFees = totalPrice > 5000 ? 500 : 200;
-  const email = state.user?.email
-  const history = useNavigate();
+  const email = state.user?.email;
+  const localReference = localStorage.getItem("reference");
+  const [transactionCreated, setTransactionCreated] = useState(false);
+  const navigate = useNavigate();
 
-  console.log(clickedItems, totalPrice, state);
+  const isAddressFilled = address !== "";
+
+  useEffect(() => {
+    if(transactionCreated && localReference) {
+      navigate("/?order-declined")
+    }
+  }, [localReference])
 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
@@ -30,17 +37,37 @@ const Checkout = () => {
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
+    console.log(paymentMethod)
   };
 
   const handlePaymentSubmit = () => {
-    // Handle payment submission logic here
-    console.log("Payment submitted!");
-  };
+    const userName = state.user.firstName
+    const items = clickedItems.map((item) => ({
+      image: item.image.url,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+    }));
+    const deliveryFees = shippingFees.toLocaleString();
+    const total = (totalPrice + shippingFees).toLocaleString();
+    const recipientEmail = state.user.email;
+    const paystackTotal = (totalPrice + shippingFees)*100
 
-  const onSuccess = () => {
-    history.push("/");
-    alert("Order successful!");
-  }
+    localStorage.setItem("clickedItems", JSON.stringify(clickedItems))
+    if (paymentMethod === "creditCard") {
+      createTransaction(
+        email,
+        paystackTotal,
+        "http://localhost:5173/?order=confirmed",
+      ).then(() => setTransactionCreated(true))
+    } 
+    
+    if(paymentMethod === "delivery") {
+      sendReceiptEmail(userName, items, deliveryFees, total, address, recipientEmail);
+      dispatch({ type: "CHECKOUT", payload: clickedItems })
+      navigate("/?order-confirmed");
+    }
+  };
 
   return (
     <div className="bg-gray-300">
@@ -103,9 +130,9 @@ const Checkout = () => {
                 <span className="ml-2">Credit Card</span>
               </label>
               <label className="flex items-center">
-                <input
+              <input
                   type="radio"
-                  value="paypal"
+                  value="delivery"
                   checked={paymentMethod === "delivery"}
                   onChange={handlePaymentMethodChange}
                   className="form-radio h-5 w-5 text-orange-500"
@@ -125,7 +152,7 @@ const Checkout = () => {
                     <img
                       src={item.image.url}
                       alt="Product"
-                      className="w-16 h-16 rounded-lg mr-2"
+                      className="w-16 h-16 rounded-lg mr-2 object-cover"
                     />
                     <div>
                       <p className="font-semibold">{item.name}</p>
@@ -158,12 +185,16 @@ const Checkout = () => {
               </div>
               <div className="flex justify-center py-4">
                 <button
-                  className={`px-20 py-4 bg-orange rounded-xl text-2xl text-white font-bold content-center hover:bg-opacity-80`}
-                  onClick={() => createTransaction(email, totalPrice, "http://localhost:5173/?order=confirmed", onSuccess)}
+                  className={`px-20 py-4 bg-orange rounded-xl text-2xl text-white font-bold content-center hover:bg-opacity-80 ${
+                    isAddressFilled
+                      ? "active:cursor-pointer"
+                      : "disabled:bg-orange-lighter cursor-not-allowed"
+                  }`}
+                  onClick={handlePaymentSubmit}
+                  disabled={!isAddressFilled}
                 >
                   Pay Now
                 </button>
-                {/* <PaystackButton {...componentProps} /> */}
               </div>
             </div>
           </div>

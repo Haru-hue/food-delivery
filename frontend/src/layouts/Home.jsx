@@ -21,21 +21,27 @@ import { verifyTransaction, AnimatedCheckMark, AnimatedWrongMark } from "../util
 const Home = () => {
   const location = useLocation();
   const reference = new URLSearchParams(location.search).get("reference");
-  const [isOrderConfirmed, setIsOrderConfirmed] = useState("false")
+  // const [isOrderConfirmed, setIsOrderConfirmed] = useState("false")
+  const isOrderConfirmedInURL = new URLSearchParams(location.search).has("order-confirmed");
+  const isOrderDeclinedInURL = new URLSearchParams(location.search).has("order-declined");
+  const clickedItems = localStorage.getItem("clickedItems", JSON.parse(clickedItems));
+  console.log(clickedItems)
 
   useEffect(() => {
-    if (reference) {
-      verifyTransaction(reference).then((isSuccessful) => {
-        setIsOrderConfirmed(isSuccessful);
-      });
+    if (isOrderConfirmedInURL || isOrderDeclinedInURL) {
+      localStorage.removeItem("reference");
     }
+    if (reference) {
+      verifyTransaction(reference).then(() => {
+        dispatch({ type: "CHECKOUT", payload: clickedItems })
+      });
+    }      
   }, [reference]);
-
-  console.log(isOrderConfirmed)
 
   return (
     <main className="container py-10">
-    {isOrderConfirmed ? <AnimatedCheckMark/> : <AnimatedWrongMark/>}
+    {isOrderConfirmedInURL && <AnimatedCheckMark />}
+    {isOrderDeclinedInURL &&( <AnimatedWrongMark />)}
       <section className="landing-section container-fluid">
         <div className="grid grid-cols-12 gap-4 justify-items-center">
           <div className="col-span-5">

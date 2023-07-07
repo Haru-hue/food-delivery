@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const ProductSchema = require("../models/schemas/food");
 const Vendor = require("../models/schemas/vendor");
 const CategorySchema = require("../models/schemas/category");
@@ -6,7 +5,6 @@ const userSchema = require("../models/schemas/user");
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const session = require('express-session');
 
 exports.getProducts = async (req, res) => {
   try {

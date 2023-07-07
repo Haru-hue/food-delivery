@@ -1,48 +1,48 @@
 import "./App.scss";
 import { RouterProvider } from "react-router-dom";
 import { useMemo, useEffect, useReducer, createContext } from "react";
-import router from './router'
+import router from "./router";
 import axios from "axios";
 
 const createInitialState = () => ({
   user: null,
-  cartItems: []
-})
+  cartItems: [],
+});
 
 const getInitialState = () => {
-  const userData = localStorage.getItem('currentUser')
-  const cartItemData = localStorage.getItem('cartItems')
+  const userData = localStorage.getItem("currentUser");
+  const cartItemData = localStorage.getItem("cartItems");
 
   if (userData === null && cartItemData === null) {
-    return createInitialState()
+    return createInitialState();
   }
 
   try {
-    const user = JSON.parse(userData)
-    const cartItems = JSON.parse(cartItemData)
+    const user = JSON.parse(userData);
+    const cartItems = JSON.parse(cartItemData);
 
     return {
       user,
       cartItems,
-    }
-  } catch(error) {
+    };
+  } catch (error) {
     if (error instanceof Error) {
-      console.error(`Something went wrong: ${error.message}`)
+      console.error(`Something went wrong: ${error.message}`);
     }
 
-    console.error('Something went wrong during initial state parsing')
-    return createInitialState()
+    console.error("Something went wrong during initial state parsing");
+    return createInitialState();
   }
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      const { session, ...user } = action.payload 
+      const { session, ...user } = action.payload;
 
       // Save the session and user data to localStorage
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.setItem('session', JSON.stringify(session));
+      localStorage.setItem("currentUser", JSON.stringify(user));
+      localStorage.setItem("session", JSON.stringify(session));
       // Update the state with the user data
       return {
         ...state,
@@ -50,62 +50,76 @@ const reducer = (state, action) => {
       };
     case "LOGOUT":
       // Remove the user data from localStorage
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('session');
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("cartItems");
 
       // Reset the state to the initial state
       return getInitialState();
     case "SET_ITEMS":
       // Update the state with the cart items
-      localStorage.setItem('cartItems', JSON.stringify(action.payload));
+      localStorage.setItem("cartItems", JSON.stringify(action.payload));
       return {
         ...state,
         cartItems: action.payload,
       };
-      case "ADD_ITEM":
+    case "ADD_ITEM":
       // Add the new item to the cartItems array
       const newItem = action.payload;
       const updatedCartItems = [...state.cartItems, newItem];
-      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
       return {
         ...state,
         cartItems: updatedCartItems,
+      };
+    case "CHECKOUT":
+      // Remove the clicked items from the cartItems array
+      const clickedItems = action.payload;
+      const remainingCartItems = state.cartItems.filter(
+        (item) => !clickedItems.includes(item)
+      );
+      localStorage.setItem("cartItems", JSON.stringify(remainingCartItems));
+      return {
+        ...state,
+        cartItems: remainingCartItems,
       };
     default:
       return state;
   }
 };
 
-export const AppContext = createContext(null)
+export const AppContext = createContext(null);
 
 function App() {
   const [state, dispatch] = useReducer(reducer, getInitialState());
-  console.log(state.user)
+  console.log(state.user);
   useEffect(() => {
-    if (state.user) {      
+    if (state.user) {
       // The port API url should be stored inside an env file and used everywhere
       // Since you use axios, you can setup your axios client with default url, port, headers etc...
-      axios.put(`http://localhost:5000/${state.user._id}/cart`, { cart: state.cartItems })
-        .then(response => {
-          console.log('User cart updated:', response.data);
+      axios
+        .put(`http://localhost:5000/${state.user._id}/cart`, {
+          cart: state.cartItems,
         })
-        .catch(error => {
-          console.error('Error updating user cart:', error);
+        .then((response) => {
+          console.log("User cart updated:", response.data);
+        })
+        .catch((error) => {
+          console.error("Error updating user cart:", error);
         });
     } else {
       dispatch({ type: "SET_ITEMS", payload: state.cartItems });
     }
   }, [state.cartItems]);
-  
+
   const totalItems = useMemo(
     () => state.cartItems.reduce((acc, item) => acc + item.quantity, 0),
     [state.cartItems]
   );
 
   return (
-      <AppContext.Provider value={{ state, dispatch, totalItems }}>
-        <RouterProvider router={router}/>
-      </AppContext.Provider>
+    <AppContext.Provider value={{ state, dispatch, totalItems }}>
+      <RouterProvider router={router} />
+    </AppContext.Provider>
   );
 }
 
