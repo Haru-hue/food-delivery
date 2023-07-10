@@ -2,7 +2,7 @@ import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import man from "../assets/man.png";
 import woman from "../assets/woman.png";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { AppContext } from "../App";
 import axios from "axios";
 
@@ -26,8 +26,12 @@ const Navbar = () => {
       <nav className="bg-black max-w-4xl mx-auto rounded-b-full">
         <div className="flex items-center justify-evenly h-16 py-8">
           <div className="flex-shrink-0">
-            <a href="" className="navbar-brand text-white font-bold text-xl">
+            <a
+              href="/"
+              className="flex navbar-brand text-white font-bold text-3xl title-font relative"
+            >
               Budo
+              <span className="w-3 h-3 rounded-full bg-orange self-end mb-0.5"></span>
             </a>
           </div>
           <div className="hidden md:block">
@@ -66,15 +70,11 @@ const Navbar = () => {
                 </div>
                 <div className="ml-4">
                   <button className="focus:outline-none group-hover:text-orange">
-                    <div className="text-white text-xl">{state.user?.firstName}</div>
+                    <div className="text-white text-xl">
+                      {state.user?.firstName}
+                    </div>
                   </button>
                   <div className="absolute z-10 mt-2 py-2 bg-white rounded-md shadow-lg invisible group-hover:visible">
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
-                    >
-                      Profile
-                    </Link>
                     <button
                       className="block px-4 py-2 text-gray-800 hover:bg-gray-100 focus:outline-none"
                       onClick={handleLogout}
@@ -88,11 +88,11 @@ const Navbar = () => {
             <Link to="/cart">
               <div className="relative inline-block">
                 <Icon icon="la:shopping-bag" className="text-3xl" />
-                <div className="absolute top-[-6px] right-[-5px] h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
+                {totalItems > 0 && <div className="absolute top-[-6px] right-[-5px] h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
                   <span className="text-white text-xs font-bold">
                     {totalItems}
                   </span>
-                </div>
+                </div>}
               </div>
             </Link>
           </div>

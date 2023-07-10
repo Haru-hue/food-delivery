@@ -6,6 +6,7 @@ import { Login, Register } from "../components/LoginRegisterModule";
 import LoginRegister from "../layouts/LoginRegister";
 import Root from "../routes/Root";
 import Checkout from "../components/Checkout";
+import { OrderConfirmed } from "../utils";
 
 const router = createBrowserRouter([
   {

@@ -2,7 +2,6 @@ import { useState, useContext, useEffect } from "react";
 import { createTransaction, hallsData, sendReceiptEmail } from "../utils";
 import { AppContext } from "../App";
 import { useLocation, useNavigate } from "react-router-dom";
-// import { PaystackButton } from "react-paystack"
 
 const Checkout = () => {
   const [address, setAddress] = useState("");
@@ -15,16 +14,15 @@ const Checkout = () => {
   const shippingFees = totalPrice > 5000 ? 500 : 200;
   const email = state.user?.email;
   const localReference = localStorage.getItem("reference");
-  const [transactionCreated, setTransactionCreated] = useState(false);
   const navigate = useNavigate();
 
   const isAddressFilled = address !== "";
 
   useEffect(() => {
-    if(transactionCreated && localReference) {
-      navigate("/?order-declined")
+    if (localReference) {
+      navigate("/");
     }
-  }, [localReference])
+  }, [localReference]);
 
   const handleAddressChange = (event) => {
     setAddress(event.target.value);
@@ -37,7 +35,6 @@ const Checkout = () => {
 
   const handlePaymentMethodChange = (event) => {
     setPaymentMethod(event.target.value);
-    console.log(paymentMethod)
   };
 
   const handlePaymentSubmit = () => {
@@ -55,17 +52,12 @@ const Checkout = () => {
 
     localStorage.setItem("clickedItems", JSON.stringify(clickedItems))
     if (paymentMethod === "creditCard") {
-      createTransaction(
-        email,
-        paystackTotal,
-        "http://localhost:5173/?order=confirmed",
-      ).then(() => setTransactionCreated(true))
+      createTransaction(email, paystackTotal, "http://localhost:5173/")
     } 
     
     if(paymentMethod === "delivery") {
       sendReceiptEmail(userName, items, deliveryFees, total, address, recipientEmail);
       dispatch({ type: "CHECKOUT", payload: clickedItems })
-      navigate("/?order-confirmed");
     }
   };
 

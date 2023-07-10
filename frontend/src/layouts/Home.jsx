@@ -14,34 +14,14 @@ import {
   faMoneyBillTransfer,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { verifyTransaction, AnimatedCheckMark, AnimatedWrongMark } from "../utils";
+import { OrderConfirmed } from "../utils";
 
 const Home = () => {
-  const location = useLocation();
-  const reference = new URLSearchParams(location.search).get("reference");
-  // const [isOrderConfirmed, setIsOrderConfirmed] = useState("false")
-  const isOrderConfirmedInURL = new URLSearchParams(location.search).has("order-confirmed");
-  const isOrderDeclinedInURL = new URLSearchParams(location.search).has("order-declined");
-  const clickedItems = localStorage.getItem("clickedItems", JSON.parse(clickedItems));
-  console.log(clickedItems)
-
-  useEffect(() => {
-    if (isOrderConfirmedInURL || isOrderDeclinedInURL) {
-      localStorage.removeItem("reference");
-    }
-    if (reference) {
-      verifyTransaction(reference).then(() => {
-        dispatch({ type: "CHECKOUT", payload: clickedItems })
-      });
-    }      
-  }, [reference]);
+  const localReference = localStorage.getItem("reference");
 
   return (
     <main className="container py-10">
-    {isOrderConfirmedInURL && <AnimatedCheckMark />}
-    {isOrderDeclinedInURL &&( <AnimatedWrongMark />)}
+      {localReference && <OrderConfirmed/>}
       <section className="landing-section container-fluid">
         <div className="grid grid-cols-12 gap-4 justify-items-center">
           <div className="col-span-5">

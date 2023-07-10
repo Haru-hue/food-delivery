@@ -38,11 +38,10 @@ const getInitialState = () => {
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-      const { session, ...user } = action.payload;
+      const { ...user } = action.payload;
 
       // Save the session and user data to localStorage
       localStorage.setItem("currentUser", JSON.stringify(user));
-      localStorage.setItem("session", JSON.stringify(session));
       // Update the state with the user data
       return {
         ...state,
@@ -74,9 +73,11 @@ const reducer = (state, action) => {
     case "CHECKOUT":
       // Remove the clicked items from the cartItems array
       const clickedItems = action.payload;
+      console.log(clickedItems)
       const remainingCartItems = state.cartItems.filter(
-        (item) => !clickedItems.includes(item)
+        (item) => !clickedItems.map(i => i._id).includes(item._id)
       );
+      console.log(remainingCartItems)
       localStorage.setItem("cartItems", JSON.stringify(remainingCartItems));
       return {
         ...state,
@@ -91,7 +92,6 @@ export const AppContext = createContext(null);
 
 function App() {
   const [state, dispatch] = useReducer(reducer, getInitialState());
-  console.log(state.user);
   useEffect(() => {
     if (state.user) {
       // The port API url should be stored inside an env file and used everywhere

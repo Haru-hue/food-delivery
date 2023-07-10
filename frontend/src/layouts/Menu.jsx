@@ -1,6 +1,6 @@
 import axios from "axios";
 import ff from "../assets/fast-food.png";
-import { useMemo, useState, useLayoutEffect, useContext } from "react";
+import { useMemo, useState, useEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
 import { Link } from "react-router-dom";
@@ -14,10 +14,26 @@ const Menu = () => {
   const [vendors, setVendors] = useState([]);
   const [productId, setProductId] = useState("");
   const [allItems, setAllItems] = useState(true);
-  const [active, setActive] = useState(false);
-  const [sorted, setSorted] = useState("");
+  const [active, setActive] = useState(null);
+  const [sortOption, setSortOption] = useState("default");
 
-  const sortedMenu = useMemo(() => {});
+  const handleSelect = (event) => {
+    setSortOption(event.target.value);
+  };
+
+  const sortedMenuItems = useMemo(() => {
+    if (sortOption === "default") {
+      return menu;
+    } else if (sortOption === "rating") {
+      return [...menu].sort(
+        (a, b) => b.meta.ratingsCount - a.meta.ratingsCount
+      );
+    } else if (sortOption === "lowp") {
+      return [...menu].sort((a, b) => a.price - b.price);
+    } else if (sortOption === "highp") {
+      return [...menu].sort((a, b) => b.price - a.price);
+    }
+  }, [menu, sortOption]);
 
   async function getMenu() {
     try {
@@ -48,7 +64,6 @@ const Menu = () => {
 
   const handleClick = async (newItem) => {
     const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
-
     if (!itemOpt) {
       // Add the new item to the cart
       const updatedCart = [...state.cartItems, { ...newItem, quantity: 1 }];
@@ -65,7 +80,7 @@ const Menu = () => {
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (allItems) {
       // fetch all products when showAllMenu is true
       getMenu();
@@ -76,7 +91,7 @@ const Menu = () => {
     getVendors();
   }, [allItems, productId]);
 
-  const displayMenu = menu.map((item) => {
+  const displayMenu = sortedMenuItems.map((item) => {
     return (
       <div
         className="rounded-lg overflow-hidden menu-card h-auto"
@@ -124,7 +139,7 @@ const Menu = () => {
     setAllItems(false);
     setProductId(id);
     getProducts(id);
-    // setActive(true)
+    setActive(id);
   };
 
   const allVendors = vendors.map((item) => {
@@ -134,15 +149,12 @@ const Menu = () => {
         onClick={() => {
           handleId(item._id);
         }}
+        className={`${item._id === active && !allItems ? "bg-orange text-white" : ""} px-10 rounded-full`}
       >
         {item.name}
       </button>
     );
   });
-
-  const handleSelect = (event) => {
-    setSelected(event.target.value);
-  };
 
   return (
     <main className="py-2 container">
@@ -151,19 +163,19 @@ const Menu = () => {
           <h1 className="font-bold text-3xl">Find the best foods</h1>
           <img src={ff} alt="" className="w-10" />
         </div>
-        <select name="" id="" onChange={handleSelect}>
+        <select className="select-custom bg-gray-300 p-4 rounded-md" onChange={handleSelect}>
           <option value="default" selected>
             Sort by default
           </option>
           <option value="rating">Sort by rating</option>
           <option value="lowp">Price: Low to High</option>
-          <option value="highp">Price: Low to High</option>
+          <option value="highp">Price: High to Low</option>
         </select>
       </div>
       <div className="flex justify-center space-x-14 py-5">
         <button
           onClick={() => setAllItems(true)}
-          className={`px-10 py-2 ${active ? "bg-gray-300" : ""}`}
+          className={`px-10 py-2 ${allItems ? "bg-orange text-white" : ""} rounded-full`}
         >
           All
         </button>

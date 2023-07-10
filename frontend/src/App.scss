@@ -15,6 +15,18 @@ html {
   font-family: Sunset-Serial, sans-serif;
 }
 
+.select-custom {
+  /* Hide the default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Add custom arrow as background image */
+  background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+}
+
 .animation-ctn {
   text-align: center;
   margin-top: 5em;
@@ -115,4 +127,38 @@ html {
 .icon--order-success svg circle#colored {
   -webkit-animation: colored-circle 0.6s ease-in-out 0.7s backwards;
   animation: colored-circle 0.6s ease-in-out 0.7s backwards;
+}
+
+@keyframes wrongmark {
+  0% {
+    stroke-dashoffset: 40;
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+}
+
+.wrongmark-circle {
+  stroke: #D06079;
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  animation: wrongmark 1s ease-in-out forwards;
+}
+
+.wrongmark-path {
+  fill: none;
+  stroke: #D06079;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: wrongmark 0.5s ease-in-out forwards;
 }
