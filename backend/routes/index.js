@@ -16,16 +16,11 @@ router.get('/vendors', controller.getVendors)
 router.post('/add-vendor', controller.addVendor)
 router.get('/vendor/:id', controller.getVendorProducts)
 
-//Category
-router.get('/categories', controller.getCategories)
-router.post('/add-category', controller.addCategory)
-
 //User 
 router.post('/register', controller.addNewUser)
 router.post('/login', controller.getUser)
 router.post('/logout', controller.logout);
 router.get('/:id/cart', controller.getCart)
 router.put('/:id/cart', controller.addUserCart)
-// router.post('/mail', controller.sendMail)
 
 module.exports = router;

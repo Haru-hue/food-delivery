@@ -1,6 +1,5 @@
 const ProductSchema = require("../models/schemas/food");
 const Vendor = require("../models/schemas/vendor");
-const CategorySchema = require("../models/schemas/category");
 const userSchema = require("../models/schemas/user");
 
 const jwt = require('jsonwebtoken');
@@ -67,8 +66,8 @@ exports.getVendors = async (req, res) => {
 };
 
 exports.getVendorProducts = async (req, res) => {
-  const categoryId = req.params.id;
-  const products = await ProductSchema.find({ vendor: categoryId }).populate('vendor');
+  const vendorId = req.params.id;
+  const products = await ProductSchema.find({ vendor: vendorId }).populate('vendor');
   res.send(products);
 };
 
@@ -87,25 +86,6 @@ exports.addVendor = async (req, res) => {
     const newVendor = new Vendor(req.body);
     const vendor = await newVendor.save();
     res.json(vendor);
-  } catch (err) {
-    res.json(err);
-  }
-}
-
-exports.addCategory = async (req, res) => {
-  try {
-    const newCategory = new CategorySchema(req.body);
-    const category = await newCategory.save();
-    res.json(category);
-  } catch (err) {
-    res.json(err);
-  }
-}
-
-exports.getCategories = async (req, res) => {
-  try {
-    const fcategories = await CategorySchema.find({});
-    res.json(fcategories);
   } catch (err) {
     res.json(err);
   }

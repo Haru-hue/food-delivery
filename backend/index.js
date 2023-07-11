@@ -4,7 +4,7 @@ const cors = require('cors');
 const cookieParser = require("cookie-parser");
 const connectToMongoose = require('./models/db')
 const session = require('express-session');
-const routes = require('./routes/route');
+const routes = require('./routes');
 
 const app = express()
 const port = process.env.PORT || 5000 

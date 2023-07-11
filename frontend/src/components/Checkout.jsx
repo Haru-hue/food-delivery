@@ -58,6 +58,7 @@ const Checkout = () => {
     if(paymentMethod === "delivery") {
       sendReceiptEmail(userName, items, deliveryFees, total, address, recipientEmail);
       dispatch({ type: "CHECKOUT", payload: clickedItems })
+      navigate("/")
     }
   };
 

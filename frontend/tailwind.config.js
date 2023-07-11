@@ -11,6 +11,9 @@ module.exports = {
       colors: {
         orange: "#F4572B",
         'orange-lighter': '#e67555',
+        brown: "#612C20",
+          'brown-dark': "#3A0E03",
+        lime: "#FED054"
       },
       width: {
         '500': '500px',
