@@ -3,10 +3,9 @@ import Home from "../layouts/Home";
 import Menu from "../layouts/Menu";
 import Cart from "../layouts/Cart";
 import { Login, Register } from "../components/LoginRegisterModule";
-import LoginRegister from "../layouts/LoginRegister";
 import Root from "../routes/Root";
+import LoginRoot from "../routes/LoginRoot";
 import Checkout from "../components/Checkout";
-import { OrderConfirmed } from "../utils";
 
 const router = createBrowserRouter([
   {
@@ -25,20 +24,28 @@ const router = createBrowserRouter([
         path: "cart",
         element: <Cart />,
       },
+      
+    ],
+  },
+  {
+    path: "/user",
+    element: <LoginRoot/>,
+    children: [
       {
         path: "login",
-        element: <Login />,
+        element: <Login/>,
       },
       {
         path: "register",
         element: <Register />,
       },
-    ],
+    ]
   },
   {
     path: "checkout",
     element: <Checkout />,
   },
+  
 ]);
 
 export default router;

@@ -1,6 +1,6 @@
 import { Icon } from "@iconify/react";
 import { useContext } from "react";
-import { AppContext } from "../App";
+import { AppContext } from "../utils/Context";
 
 export default function CartItem(props) {
   const { state, dispatch } = useContext(AppContext);
