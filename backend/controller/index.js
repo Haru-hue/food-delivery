@@ -93,30 +93,36 @@ exports.addVendor = async (req, res) => {
 
 exports.addNewUser = async (req, res) => {
   try {
-    const newUser = new userSchema(req.body);
-    const user = await newUser.save();
-    res.status(200).json({ user, message: 'User registered successfully!' });
+    const existingUser = await userSchema.findOne({ email: req.body.email });
+    if (existingUser) {
+      res.json({ status: false, message: 'Email already exists' });
+    } else {
+      const newUser = new userSchema(req.body);
+      const user = await newUser.save();
+      console.log(req.body);
+      res.status(200).json({ status: true, user, message: 'User registered successfully!' });
+    }
   } catch (error) {
     console.log(error);
     res.json({ message: 'Internal server error' });
   }
-}
+};
 
 exports.getUser =  async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await userSchema.findOne({ email });
     if (!user) {
-       return res.status(401).json({ message: 'Invalid email or password' });
+       return res.status(401).json({ status: false, message: 'Invalid email or password' });
     }
       // Check if password is correct
     const isPasswordMatch = await bcrypt.compare(password, user.password);
      if (!isPasswordMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return res.status(401).json({ status: false, message: 'Invalid email or password' });
     }
       // Generate access token
     const token = jwt.sign({ id: user._id }, 'mysecretkey');
-    res.status(200).json({ user, token, message: 'Login successful', session: req.session });
+    res.status(200).json({ user, token, message: 'Login successful', status: true });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Internal server error' });
@@ -127,28 +133,6 @@ exports.logout = async (req, res) => {
   try {
     req.session.destroy();
     res.status(200).json({ message: 'Logout successful' });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-exports.getSession = async (req, res) => {
-  res.json(req.session)
-}
-
-exports.isAuthenticated = async (req, res, next) => {
-  try {
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    const user = await userSchema.findById(userId);
-    if (!user) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    req.user = user;
-    next();
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Internal server error' });

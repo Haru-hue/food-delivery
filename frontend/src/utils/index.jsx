@@ -1,7 +1,15 @@
 import axios from "axios";
 import emailjs from "@emailjs/browser";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../App";
+import { AppContext } from "./Context";
+import Loading from "../components/Loading";
+import { Link, useLocation } from "react-router-dom";
+import "./FadeIn.scss";
+
+const publicKey = import.meta.env.VITE_API_KEY;
+const serviceKey = import.meta.env.VITE_SERVICE_KEY;
+const templateKey = import.meta.env.VITE_TEMPLATE_KEY;
+const emailKey = import.meta.env.VITE_EMAIL_KEY;
 
 export const sendReceiptEmail = (
   userName,
@@ -29,11 +37,6 @@ export const sendReceiptEmail = (
       console.error("Error sending email:", error);
     });
 };
-
-const publicKey = import.meta.env.VITE_API_KEY;
-const serviceKey = import.meta.env.VITE_SERVICE_KEY;
-const templateKey = import.meta.env.VITE_TEMPLATE_KEY;
-const emailKey = import.meta.env.VITE_EMAIL_KEY;
 
 export const hallsData = [
   {
@@ -73,7 +76,6 @@ export const createTransaction = async (email, amount, callBackURL) => {
     if (data.status) {
       localStorage.setItem("reference", JSON.stringify(data.data.reference));
       window.location = data.data.authorization_url;
-      console.log(data);
     } else {
       // Handle error
       console.error(data.message);
@@ -176,15 +178,17 @@ export const AnimatedWrongMark = () => {
 const OrderDeclinedPopup = ({ onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-      <div className="bg-white p-8 rounded-lg">
+      <div className="bg-white p-8 rounded-lg flex-col flex items-center justify-center">
         <h2 className="text-2xl font-semibold mb-4">Order Declined</h2>
         <AnimatedWrongMark />
-        <button
-          className="bg-blue-500 text-white py-2 px-4 rounded mt-4"
-          onClick={onClose}
-        >
-          OK
-        </button>
+        <Link to={`/cart`}>
+          <button
+            className="bg-orange text-white py-2 px-4 rounded mt-4 text-xl"
+            onClick={onClose}
+          >
+            OK
+          </button>
+        </Link>
       </div>
     </div>
   );
@@ -207,53 +211,71 @@ const OrderConfirmedPopup = ({ onClose }) => {
   );
 };
 
-export const OrderConfirmed = () => {
+export const OrderConfirmed = ({ isOrderConfirmed: isOrderConfirmedProp }) => {
   const [isOrderConfirmed, setIsOrderConfirmed] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(true);
-  const { dispatch } = useContext(AppContext)
+  const { dispatch } = useContext(AppContext);
   const clickedItems = JSON.parse(localStorage.getItem("clickedItems"));
-
+  const location = useLocation()
+  const onDelivery = location.state?.onDelivery
 
   const handleClosePopup = () => {
     setShowPopup(false);
   };
 
   useEffect(() => {
-    const reference = JSON.parse(localStorage.getItem("reference"));
+    if (onDelivery) {
+      setIsOrderConfirmed(true);
+    } else {
+      const reference = JSON.parse(localStorage.getItem("reference"));
 
-    // Verify the transaction with the Paystack API
-    verifyTransaction(reference).then((isSuccessful) => {
-      if (isSuccessful) {
-        // Payment was successful
-        // Update your application state here
-        localStorage.removeItem("reference");
-        dispatch({ type: "CHECKOUT", payload: clickedItems })
-        setLoading(false);
-        setIsOrderConfirmed(true);
-      } else {
-        // Payment failed or user closed payment page
-        // Handle this case here
-        localStorage.removeItem("reference");
-        // navigate("/?order-declined");
-        setLoading(false);
-        setIsOrderConfirmed(false);
-      }
-    });
+      // Verify the transaction with the Paystack API
+      verifyTransaction(reference).then((isSuccessful) => {
+        if (isSuccessful) {
+          // Payment was successful
+          // Update your application state here
+          localStorage.removeItem("reference");
+          dispatch({ type: "CHECKOUT", payload: clickedItems });
+          setIsOrderConfirmed(true);
+        } else {
+          // Payment failed or user closed payment page
+          // Handle this case here
+          localStorage.removeItem("reference");
+          setIsOrderConfirmed(false);
+        }
+      });
+    }
   }, []);
 
-  if (loading) {
-    return <div>Loading</div>;
-  } else {
-    return (
-      <div>
-        {isOrderConfirmed === true && !loading && showPopup && (
-          <OrderConfirmedPopup onClose={handleClosePopup} />
-        )}
-        {isOrderConfirmed === false && !loading && showPopup && (
-          <OrderDeclinedPopup onClose={handleClosePopup} />
-        )}
-      </div>
-    );
-  }
+  return (
+    <div>
+      {isOrderConfirmed === true && showPopup && (
+        <OrderConfirmedPopup onClose={handleClosePopup} />
+      )}
+      {isOrderConfirmed === false && showPopup && (
+        <OrderDeclinedPopup onClose={handleClosePopup} />
+      )}
+    </div>
+  );
+};
+
+export const FadeIn = ({ children, url }) => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate a loading delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+  }, []);
+
+  return (
+    <div className="fade-in" key={url}>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="fade-in-children">{children}</div>
+      )}
+    </div>
+  );
 };

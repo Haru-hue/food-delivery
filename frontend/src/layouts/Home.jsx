@@ -9,15 +9,18 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { OrderConfirmed } from "../utils";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Home = () => {
   const localReference = localStorage.getItem("reference");
   const arrow = <FontAwesomeIcon icon={faArrowRight} />;
+  const location = useLocation()
+  const onDelivery = location.state?.onDelivery
 
   return (
     <main className="container py-10">
-      {localReference && <OrderConfirmed />}
+     {localReference || onDelivery ? <OrderConfirmed /> : null}
+
       <section className="landing-section container-fluid">
         <div className="grid grid-cols-12 gap-4 justify-items-center">
           <div className="col-span-5">

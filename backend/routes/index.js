@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controller = require('../controller/index');
-
-router.get('/', (req, res) => {
-    res.send("Server connected")
-})
+const controller = require('../controller');
 
 // Menu
 router.get('/menu', controller.getProducts)

@@ -4,7 +4,7 @@ import { useMemo, useState, useEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
 import { Link } from "react-router-dom";
-import { AppContext } from "../App";
+import { AppContext } from "../utils/Context";
 
 export const line = <div className="w-full border-b border-gray-300"></div>;
 

@@ -9,3 +9,6 @@ export { default as fanta } from "./fanta.png";
 export { default as chic } from "./ChicandChips.png"
 export { default as jrice } from "./JollofRice.png"
 export { default as snack } from "./PouYam.png"
+export { default as checkout } from "./checkout.png"
+export { default as login } from "./login.jpg"
+export { default as basket } from "./basket.png"

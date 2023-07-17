@@ -1,178 +1,357 @@
-import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AppContext } from '../App';
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AppContext } from "../utils/Context";
+import { Icon } from "@iconify/react";
+
+const Popup = ({ isSuccessful, text }) => {
+  return (
+    <div className="fixed inset-0 flex items-start justify-center bg-gray-900 bg-opacity-50 pt-8">
+      <div className="bg-white rounded-lg flex space-x-4 p-8 items-center justify-center">
+        <Icon
+          icon={
+            isSuccessful ? "carbon:checkmark-filled" : "carbon:close-filled"
+          }
+          color={isSuccessful ? "green" : "red"}
+          className="text-3xl"
+        />
+        <h2 className="text-lg">
+          {text}
+        </h2>
+      </div>
+    </div>
+  );
+};
 
 export const Register = () => {
+  const { dispatch } = useContext(AppContext);
   const navigate = useNavigate();
+  const [user, setUser] = useState({
+    firstName: "",
+    lastName: "",
+    gender: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+  });
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSuccessful, setIsSuccessful] = useState({
+    show: null, text: ''
+  })
+  const [correct, setCorrect] = useState(false)
+  const [isChecked, setIsChecked] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [gender, setGender] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  async function postUser () {
-    try {
-        const response = await axios.post('http://localhost:5000/register', {
-          firstName,
-          lastName,
-          gender,
-          email,
-          password,
-          confirmPassword,
-        });
-        console.log('Server response:', response.data);
-      } catch (error) {
-        console.error('Error:', error);
+  const Authenticate = async (user, show) => {
+    showPopup(() => {
+      if (show) {
+        dispatch({ type: "LOGIN", payload: user });
+        navigate("/");
       }
+    });
+  };
+  
+  const showPopup = (callback) => {
+    setIsSuccessful((prev) => ({
+      ...prev,
+      show: true
+    }));
+  
+    setTimeout(() => {
+      setIsSuccessful((prev) => ({
+        ...prev,
+        show: null
+      }));
+      callback(); // Execute the callback function
+    }, 3500);
+  }; 
+
+  async function postUser() {
+    try {
+      const response = await axios.post("http://localhost:5000/register", user);
+      setIsSuccessful((prev) => ({
+        ...prev,
+        show: response.data.status, // Update the value directly
+        text: response.data.message
+      }));
+      console.log(response)
+      await Authenticate(response.data.user, response.data.status)
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
+
+  useEffect(() => {
+    const isValid =
+      user.firstName !== "" &&
+      user.lastName !== "" &&
+      user.gender !== "" &&
+      user.email !== "" &&
+      user.password !== "" &&
+      user.phoneNumber !== "" &&
+      confirmPassword !== "" &&
+      isChecked;
+    setIsValid(isValid);
+  }, [user, confirmPassword, isChecked]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prevState) => ({ ...prevState, [name]: value }));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('First Name:', firstName);
-    console.log('Last Name:', lastName);
-    console.log('Gender:', gender);
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
-    postUser()
+
+    if (user.password !== confirmPassword) {
+      setCorrect(true)
+      setIsSuccessful((prev) => ({
+        ...prev,
+        show: false,
+        text: "Passwords do not match"
+      }))
+      showPopup()
+    } else {
+      postUser();
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="firstName">First Name:</label>
-        <input
-          type="text"
-          id="firstName"
-          value={firstName}
-          onChange={(event) => setFirstName(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="lastName">Last Name:</label>
-        <input
-          type="text"
-          id="lastName"
-          value={lastName}
-          onChange={(event) => setLastName(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="gender">Gender:</label>
-        <select
-          id="gender"
-          value={gender}
-          onChange={(event) => setGender(event.target.value)}
-          required
+    <div className="p-20 w-full">
+      <h1 className="font-bold title-font text-4xl pb-4">
+        Create your account <span className="text-orange">!</span>
+      </h1>
+      {isSuccessful.show !== null ? <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text}/> : ""}
+      <form onSubmit={handleSubmit} method="post">
+        <div className="flex space-x-6">
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="firstName">First Name:</label>
+            <input
+              type="text"
+              name="firstName"
+              className="p-3 border border-gray-300 rounded flex-grow"
+              value={user.firstName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="lastName">Last Name:</label>
+            <input
+              type="text"
+              className="p-3 border border-gray-300 rounded flex-grow"
+              name="lastName"
+              value={user.lastName}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+        <div className="flex space-x-6">
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="gender">Gender:</label>
+            <select
+              name="gender"
+              className="p-3 border border-gray-300 rounded flex-grow"
+              value={user.gender}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="email">E-mail Address:</label>
+            <input
+              type="email"
+              className="p-3 border border-gray-300 rounded flex-grow"
+              name="email"
+              value={user.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        </div>
+        <div className="flex flex-col py-3 w-full">
+          <label htmlFor="phoneNumber">Phone Number:</label>
+          <input
+            type="phone"
+            className='p-3 border border-gray-300 rounded flex-grow'
+            name="phoneNumber"
+            value={user.phoneNumber}
+            onChange={handleChange}
+            minLength={11}
+            maxLength={11}
+            required
+          />
+        </div>
+        <div className="flex space-x-6">
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="pwd">Password:</label>
+            <input
+              className={`p-3 border ${correct ? 'border-red-600 outline-red-600' : 'border-gray-300'} rounded flex-grow`}
+              type="password"
+              name="password"
+              value={user.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="flex flex-col py-3 w-full">
+            <label htmlFor="cpwd">Confirm Password:</label>
+            <input
+              className={`p-3 border ${correct ? 'border-red-600 outline-red-600' : 'border-gray-300'} rounded flex-grow`}
+              type="password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div className="py-3">
+          <input type="checkbox" name="isChecked" id="" placeholder="" 
+          onChange={(e) => setIsChecked(e.target.checked)} value={isChecked} className="text-orange"/> By checking
+          this box, you agree to the terms and conditions.
+        </div>
+        <button
+          type="submit"
+          className={`bg-orange ${isValid ? 'active:cursor-pointer' : 'disabled:bg-orange-lighter cursor-not-allowed'} w-full text-white uppercase 
+          my-6 p-6 font-bold text-3xl rounded-lg`}
+          disabled={!isValid}
         >
-          <option value="">Select Gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="other">Other</option>
-        </select>
+          Register
+        </button>
+      </form>
+      <div className="text-xl font-bold">
+        Have an account?
+        <Link to={`/user/login`}>
+          <span className="text-orange pl-1">Log in now</span>
+        </Link>
       </div>
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label htmlFor="confirmPassword">Confirm Password:</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          onChange={(event) => setConfirmPassword(event.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">Register</button>
-    </form>
+    </div>
   );
-}
+};
 
 export const Login = () => {
-  const { state, dispatch } = useContext(AppContext);
+  const { dispatch } = useContext(AppContext);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState({
+    show: null, text: ''
+  })
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const Authenticate = async (user, show) => {
+    showPopup(() => {
+      if (show) {
+        dispatch({ type: "LOGIN", payload: user });
+        navigate("/");
+      }
+    });
+  };
+  
+  const showPopup = (callback) => {
+    setIsSuccessful((prev) => ({
+      ...prev,
+      show: true
+    }));
+  
+    setTimeout(() => {
+      setIsSuccessful((prev) => ({
+        ...prev,
+        show: null
+      }));
+      callback(); // Execute the callback function
+    }, 3500);
+  }; 
+
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   async function getUser() {
     try {
-      const response = await axios.post('http://localhost:5000/login',
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true, // include session cookie in headers
-        }
+      const response = await axios.post("http://localhost:5000/login",
+        { email, password }
       );
-      console.log('Server response:', response.data);
-      const { user } = response.data;
-      const userCart = await axios.get(`http://localhost:5000/${user._id}/cart`)
-      dispatch({ type: 'LOGIN', payload: user });
-      dispatch({ type: 'SET_ITEMS', payload: userCart.data })
-      // navigate('/');
+      setIsSuccessful((prev) => ({
+        ...prev,
+        show: response.data.status,
+        text: response.data.message
+      }));
+      await Authenticate(response.data.user, response.data.status);
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
     }
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log('email:', email);
-    console.log('password:', password);
     getUser();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email">Email:</label>
-        <input
-          name="email"
-          type="email"
-          id="email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          required
-        />
+    <div className="p-20 w-full">
+      {isSuccessful.show !== null ? <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text}/> : ""}
+      <h1 className="font-bold title-font text-4xl">
+        Welcome<span className="text-orange">!</span>
+      </h1>
+      <div className="text-xl font-bold pb-4">
+        Don't have an account?
+        <Link to={`/user/register`}>
+          <span className="text-orange pl-1">Sign up now</span>
+        </Link>
       </div>
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          name="password"
-          type="password"
-          id="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
-      </div>
-      <button type="submit">Login</button>
-    </form>
+      <p>Enter details to login.</p>
+      <form onSubmit={handleSubmit} action="/users" method="post">
+        <div className="py-3 w-full">
+          <input
+            type="email"
+            className="p-3 border border-gray-300 rounded w-full"
+            name="email"
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="flex py-3">
+          <input
+            type={showPassword ? "text" : "password"}
+            className="p-3 border border-gray-300 rounded flex-grow"
+            name="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <span
+            className="font-bold uppercase cursor-pointer text-orange absolute top-1/2 right-32 transform translate-y-[15%]"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </span>
+        </div>
+
+        <p
+          className="py-5 font-bold flex cursor-pointer text-orange justify-end uppercase"
+          onClick={() =>
+            alert(
+              "For test purposes, the email is ukojoshy@gmail.com and the password is P@$$w0rd@12345"
+            )
+          }
+        >
+          Forgot Password?
+        </p>
+        <button
+          type="submit"
+          className="bg-orange w-full text-white uppercase p-6 font-bold text-3xl rounded-lg"
+        >
+          Log In
+        </button>
+      </form>
+    </div>
   );
 };
-
