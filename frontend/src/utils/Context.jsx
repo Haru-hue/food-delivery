@@ -2,6 +2,7 @@ import { createContext, useReducer, useMemo, useCallback } from "react";
 import axios from "axios";
 
 export const AppContext = createContext();
+export const url = import.meta.env.VITE_API_URL
 
 const createInitialState = () => ({
   user: null,
@@ -102,7 +103,7 @@ export function AppContextProvider({ children }) {
   const setCartItems = useCallback(async () => {
     if (state.user) {
       axios
-        .put(`http://localhost:5000/${state.user._id}/cart`, {
+        .put(`${url}/${state.user._id}/cart`, {
           cart: state.cartItems,
         })
         .then((response) => {

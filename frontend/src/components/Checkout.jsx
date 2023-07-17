@@ -15,6 +15,7 @@ const Checkout = () => {
   const email = state.user?.email;
   const localReference = localStorage.getItem("reference");
   const navigate = useNavigate();
+  const callbackURL = import.meta.env.VITE_CALLBACK_URL
 
   const isAddressFilled = address !== "";
 
@@ -52,7 +53,7 @@ const Checkout = () => {
 
     localStorage.setItem("clickedItems", JSON.stringify(clickedItems));
     if (paymentMethod === "creditCard") {
-      createTransaction(email, paystackTotal, "http://localhost:5173/");
+      createTransaction(email, paystackTotal, callbackURL);
     }
 
     if (paymentMethod === "delivery") {

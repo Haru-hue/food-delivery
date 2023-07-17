@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { AppContext } from "../utils/Context";
+import { AppContext, url } from "../utils/Context";
 import { Icon } from "@iconify/react";
 
 const Popup = ({ isSuccessful, text }) => {
@@ -68,7 +68,7 @@ export const Register = () => {
 
   async function postUser() {
     try {
-      const response = await axios.post("http://localhost:5000/register", user);
+      const response = await axios.post(`${url}/register`, user);
       setIsSuccessful((prev) => ({
         ...prev,
         show: response.data.status, // Update the value directly
@@ -275,7 +275,7 @@ export const Login = () => {
 
   async function getUser() {
     try {
-      const response = await axios.post("http://localhost:5000/login",
+      const response = await axios.post(`${url}/login`,
         { email, password }
       );
       setIsSuccessful((prev) => ({

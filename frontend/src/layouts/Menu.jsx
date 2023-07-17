@@ -3,8 +3,7 @@ import ff from "../assets/fast-food.png";
 import { useMemo, useState, useEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
-import { Link } from "react-router-dom";
-import { AppContext } from "../utils/Context";
+import { AppContext, url } from "../utils/Context";
 
 export const line = <div className="w-full border-b border-gray-300"></div>;
 
@@ -37,7 +36,7 @@ const Menu = () => {
 
   async function getMenu() {
     try {
-      const response = await axios.get("http://localhost:5000/menu");
+      const response = await axios.get(`${url}/menu`);
       setMenu(response.data.allProducts);
     } catch (err) {
       console.log(err);
@@ -46,7 +45,7 @@ const Menu = () => {
 
   async function getProducts(id) {
     try {
-      const response = await axios.get(`http://localhost:5000/vendor/${id}`);
+      const response = await axios.get(`${url}/vendor/${id}`);
       setMenu(response.data);
     } catch (err) {
       console.log(err);
@@ -55,7 +54,7 @@ const Menu = () => {
 
   async function getVendors() {
     try {
-      const response = await axios.get("http://localhost:5000/vendors");
+      const response = await axios.get(`${url}/vendors`);
       setVendors(response.data);
     } catch (err) {
       console.log(err);
@@ -163,8 +162,10 @@ const Menu = () => {
           <h1 className="font-bold text-3xl">Find the best foods</h1>
           <img src={ff} alt="" className="w-10" />
         </div>
-        <select className="select-custom bg-gray-300 p-4 rounded-md" onChange={handleSelect}>
-          <option value="default" selected>
+        <select className="select-custom bg-gray-300 p-4 rounded-md" onChange={handleSelect}
+          value={sortOption}
+        >
+          <option value="default">
             Sort by default
           </option>
           <option value="rating">Sort by rating</option>

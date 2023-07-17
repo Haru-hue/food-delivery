@@ -1,21 +1,19 @@
 import { Icon } from "@iconify/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import man from "../assets/man.png";
 import woman from "../assets/woman.png";
 import { useContext } from "react";
-import { AppContext } from "../utils/Context";
+import { AppContext, url } from "../utils/Context";
 import axios from "axios";
 
 const Navbar = () => {
-  const navigate = useNavigate()
   const { state, dispatch, totalItems } = useContext(AppContext);
 
   const handleLogout = () => {
     axios
-      .post("http://localhost:5000/logout", { withCredentials: true })
+      .post(`${url}/logout`, { withCredentials: true })
       .then(() => {
         dispatch({ type: "LOGOUT" });
-        // navigate('/user/login');
       })
       .catch((error) => {
         console.error("Error:", error);
