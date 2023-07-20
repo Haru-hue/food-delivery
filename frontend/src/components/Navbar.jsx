@@ -2,12 +2,13 @@ import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import man from "../assets/man.png";
 import woman from "../assets/woman.png";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AppContext, url } from "../utils/Context";
 import axios from "axios";
 
 const Navbar = () => {
   const { state, dispatch, totalItems } = useContext(AppContext);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const handleLogout = () => {
     axios
@@ -20,9 +21,11 @@ const Navbar = () => {
       });
   };
 
+  console.log(isMenuVisible);
+
   return (
-    <header className="container mb-4">
-      <nav className="bg-black max-w-4xl mx-auto rounded-b-full">
+    <header className="container mb-4 px-2">
+      <nav className="bg-black max-w-4xl mx-auto py-2 rounded-b-3xl">
         <div className="flex items-center justify-evenly h-16 py-8">
           <div className="flex-shrink-0">
             <a
@@ -65,10 +68,26 @@ const Navbar = () => {
                     src={state.user?.gender === "male" ? man : woman}
                     alt="avatar"
                     className="rounded-full h-10 w-10"
+                    onClick={() => setIsMenuVisible((prev) => !prev)}
                   />
                 </div>
-                <div className="ml-4">
-                  <button className="focus:outline-none group-hover:text-orange">
+                {isMenuVisible && (
+                  <div className="absolute z-10 mt-40 py-2 bg-white rounded-md shadow-lg">
+                    <Link to={`/menu`}>
+                      <div className="block px-4 py-2 text-gray-800 hover:bg-gray-100 focus:outline-none">
+                        Menu
+                      </div>
+                    </Link>
+                    <button
+                      className="block px-4 py-2 text-gray-800 hover:bg-gray-100 focus:outline-none"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+                <div className="max-md:hidden ml-4">
+                  <button className="focus:outline-none md:group-hover">
                     <div className="text-white text-xl">
                       {state.user?.firstName}
                     </div>
@@ -86,12 +105,14 @@ const Navbar = () => {
             )}
             <Link to="/cart">
               <div className="relative inline-block">
-                <Icon icon="la:shopping-bag" className="text-3xl" />
-                {totalItems > 0 && <div className="absolute top-[-6px] right-[-5px] h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">
-                    {totalItems}
-                  </span>
-                </div>}
+                <Icon icon="la:shopping-bag" className="text-3xl hover:text-orange-lighter" />
+                {totalItems > 0 && (
+                  <div className="absolute top-[-6px] right-[-5px] h-5 w-5 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">
+                      {totalItems}
+                    </span>
+                  </div>
+                )}
               </div>
             </Link>
           </div>

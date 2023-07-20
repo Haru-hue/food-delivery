@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AppContext, url } from "../utils/Context";
 import { Icon } from "@iconify/react";
+import { useDocumentTitle } from "../utils";
 
 const Popup = ({ isSuccessful, text }) => {
   return (
@@ -15,9 +16,7 @@ const Popup = ({ isSuccessful, text }) => {
           color={isSuccessful ? "green" : "red"}
           className="text-3xl"
         />
-        <h2 className="text-lg">
-          {text}
-        </h2>
+        <h2 className="text-lg">{text}</h2>
       </div>
     </div>
   );
@@ -36,9 +35,10 @@ export const Register = () => {
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSuccessful, setIsSuccessful] = useState({
-    show: null, text: ''
-  })
-  const [correct, setCorrect] = useState(false)
+    show: null,
+    text: "",
+  });
+  const [correct, setCorrect] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
@@ -50,21 +50,21 @@ export const Register = () => {
       }
     });
   };
-  
+
   const showPopup = (callback) => {
     setIsSuccessful((prev) => ({
       ...prev,
-      show: true
+      show: true,
     }));
-  
+
     setTimeout(() => {
       setIsSuccessful((prev) => ({
         ...prev,
-        show: null
+        show: null,
       }));
       callback(); // Execute the callback function
     }, 3500);
-  }; 
+  };
 
   async function postUser() {
     try {
@@ -72,10 +72,9 @@ export const Register = () => {
       setIsSuccessful((prev) => ({
         ...prev,
         show: response.data.status, // Update the value directly
-        text: response.data.message
+        text: response.data.message,
       }));
-      console.log(response)
-      await Authenticate(response.data.user, response.data.status)
+      await Authenticate(response.data.user, response.data.status);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -103,26 +102,31 @@ export const Register = () => {
     event.preventDefault();
 
     if (user.password !== confirmPassword) {
-      setCorrect(true)
+      setCorrect(true);
       setIsSuccessful((prev) => ({
         ...prev,
         show: false,
-        text: "Passwords do not match"
-      }))
-      showPopup()
+        text: "Passwords do not match",
+      }));
+      showPopup();
     } else {
       postUser();
     }
   };
 
   return (
-    <div className="p-20 w-full">
+    <div className="p-6 lg:p-10 xl:p-20 w-full">
+      {useDocumentTitle('Register')}
       <h1 className="font-bold title-font text-4xl pb-4">
         Create your account <span className="text-orange">!</span>
       </h1>
-      {isSuccessful.show !== null ? <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text}/> : ""}
+      {isSuccessful.show !== null ? (
+        <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text} />
+      ) : (
+        ""
+      )}
       <form onSubmit={handleSubmit} method="post">
-        <div className="flex space-x-6">
+        <div className="flex max-xl:flex-col 2xl:space-x-6">
           <div className="flex flex-col py-3 w-full">
             <label htmlFor="firstName">First Name:</label>
             <input
@@ -146,7 +150,7 @@ export const Register = () => {
             />
           </div>
         </div>
-        <div className="flex space-x-6">
+        <div className="flex max-xl:flex-col 2xl:space-x-6">
           <div className="flex flex-col py-3 w-full">
             <label htmlFor="gender">Gender:</label>
             <select
@@ -177,7 +181,7 @@ export const Register = () => {
           <label htmlFor="phoneNumber">Phone Number:</label>
           <input
             type="phone"
-            className='p-3 border border-gray-300 rounded flex-grow'
+            className="p-3 border border-gray-300 rounded flex-grow"
             name="phoneNumber"
             value={user.phoneNumber}
             onChange={handleChange}
@@ -186,11 +190,13 @@ export const Register = () => {
             required
           />
         </div>
-        <div className="flex space-x-6">
+        <div className="flex max-xl:flex-col 2xl:space-x-6">
           <div className="flex flex-col py-3 w-full">
             <label htmlFor="pwd">Password:</label>
             <input
-              className={`p-3 border ${correct ? 'border-red-600 outline-red-600' : 'border-gray-300'} rounded flex-grow`}
+              className={`p-3 border ${
+                correct ? "border-red-600 outline-red-600" : "border-gray-300"
+              } rounded flex-grow`}
               type="password"
               name="password"
               value={user.password}
@@ -201,7 +207,9 @@ export const Register = () => {
           <div className="flex flex-col py-3 w-full">
             <label htmlFor="cpwd">Confirm Password:</label>
             <input
-              className={`p-3 border ${correct ? 'border-red-600 outline-red-600' : 'border-gray-300'} rounded flex-grow`}
+              className={`p-3 border ${
+                correct ? "border-red-600 outline-red-600" : "border-gray-300"
+              } rounded flex-grow`}
               type="password"
               name="confirmPassword"
               value={confirmPassword}
@@ -211,13 +219,24 @@ export const Register = () => {
           </div>
         </div>
         <div className="py-3">
-          <input type="checkbox" name="isChecked" id="" placeholder="" 
-          onChange={(e) => setIsChecked(e.target.checked)} value={isChecked} className="text-orange"/> By checking
-          this box, you agree to the terms and conditions.
+          <input
+            type="checkbox"
+            name="isChecked"
+            id=""
+            placeholder=""
+            onChange={(e) => setIsChecked(e.target.checked)}
+            value={isChecked}
+            className="text-orange"
+          />{" "}
+          By checking this box, you agree to the terms and conditions.
         </div>
         <button
           type="submit"
-          className={`bg-orange ${isValid ? 'active:cursor-pointer' : 'disabled:bg-orange-lighter cursor-not-allowed'} w-full text-white uppercase 
+          className={`bg-orange ${
+            isValid
+              ? "active:cursor-pointer"
+              : "disabled:bg-orange-lighter cursor-not-allowed"
+          } w-full text-white uppercase 
           my-6 p-6 font-bold text-3xl rounded-lg`}
           disabled={!isValid}
         >
@@ -239,8 +258,9 @@ export const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState({
-    show: null, text: ''
-  })
+    show: null,
+    text: "",
+  });
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -253,35 +273,32 @@ export const Login = () => {
       }
     });
   };
-  
+
   const showPopup = (callback) => {
     setIsSuccessful((prev) => ({
       ...prev,
-      show: true
+      show: true,
     }));
-  
+
     setTimeout(() => {
       setIsSuccessful((prev) => ({
         ...prev,
-        show: null
+        show: null,
       }));
       callback(); // Execute the callback function
     }, 3500);
-  }; 
-
+  };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   async function getUser() {
     try {
-      const response = await axios.post(`${url}/login`,
-        { email, password }
-      );
+      const response = await axios.post(`${url}/login`, { email, password });
       setIsSuccessful((prev) => ({
         ...prev,
         show: response.data.status,
-        text: response.data.message
+        text: response.data.message,
       }));
       await Authenticate(response.data.user, response.data.status);
     } catch (error) {
@@ -295,8 +312,13 @@ export const Login = () => {
   };
 
   return (
-    <div className="p-20 w-full">
-      {isSuccessful.show !== null ? <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text}/> : ""}
+    <div className="p-6 xl:p-20 w-full">
+      {useDocumentTitle('Login')}
+      {isSuccessful.show !== null ? (
+        <Popup isSuccessful={isSuccessful.show} text={isSuccessful.text} />
+      ) : (
+        ""
+      )}
       <h1 className="font-bold title-font text-4xl">
         Welcome<span className="text-orange">!</span>
       </h1>
@@ -318,20 +340,22 @@ export const Login = () => {
             required
           />
         </div>
-        <div className="flex py-3">
+        <div className="flex flex-wrap items-stretch py-3">
           <input
             type={showPassword ? "text" : "password"}
-            className="p-3 border border-gray-300 rounded flex-grow"
+            className="p-3 border border-r-0 border-gray-300 rounded-l flex-grow"
             name="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <span
-            className="font-bold uppercase cursor-pointer text-orange absolute top-1/2 right-32 transform translate-y-[15%]"
+            className="font-bold uppercase cursor-pointer text-orange border border-l-0 border-gray-300 flex rounded-r items-center px-6"
             onClick={togglePasswordVisibility}
           >
-            {showPassword ? "Hide" : "Show"}
+            <div className="text-orange text-2xl">
+              <Icon icon={showPassword ? "ion:eye-outline" : "ion:eye-off-outline"} />
+            </div>
           </span>
         </div>
 

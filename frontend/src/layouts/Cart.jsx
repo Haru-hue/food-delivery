@@ -4,7 +4,8 @@ import { line } from "./Menu";
 import { AppContext } from "../utils/Context";
 import { Link } from "react-router-dom";
 import { basket } from "../assets";
-import { nanoid } from 'nanoid'
+import { nanoid } from "nanoid";
+import { useDocumentTitle } from "../utils";
 
 const Cart = () => {
   const { state, totalItems } = useContext(AppContext);
@@ -26,7 +27,7 @@ const Cart = () => {
     [clickedItems]
   );
 
-  const itemsInCart = state.cartItems.map((item) => {
+  const itemsInCart = state.cartItems?.map((item) => {
     const isClicked = clickedItems.includes(item);
     const totalPrice = isClicked ? item.price * item.count : 0;
 
@@ -68,11 +69,11 @@ const Cart = () => {
           </div>
           <div className="flex justify-center py-16">
             <Link
-              to={isActive ? "/checkout" : ""}
+              to={isActive ? (state.user ? "/checkout" : "/user/login") : ""}
               state={{ clickedItems: clickedItems, totalPrice: totalPrice }}
             >
               <button
-                className={`px-72 py-10 bg-orange rounded-xl text-3xl text-white uppercase ${
+                className={`py-6 px-10 lg:px-36 lg:py-12  bg-orange rounded-xl text-xl lg:text-3xl checkout-button text-white uppercase ${
                   isActive
                     ? "active:cursor-pointer"
                     : "disabled:bg-orange-lighter cursor-not-allowed"
@@ -88,10 +89,11 @@ const Cart = () => {
     }
     return (
       <div className="flex flex-col items-center justify-center space-y-3">
-        <img src={basket} className="w-1/20" />
+        {useDocumentTitle('Cart')}
+        <img src={basket} className="md:w-1/20 w-1/5" />
         <p className="text-orange text-2xl">Your Cart is empty!</p>
         <Link to={`/menu`}>
-          <button className="text-md bg-gradient-to-r from-orange to-purple-500 p-6 rounded-full text-white">
+          <button className="text-md bg-gradient-to-r from-orange to-purple-500 p-4 md:p-6 rounded-full text-white">
             Start shopping now!
           </button>
         </Link>

@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
-import { createTransaction, hallsData, sendReceiptEmail } from "../utils";
+import { createTransaction, hallsData, sendReceiptEmail, useDocumentTitle } from "../utils";
 import { AppContext } from "../utils/Context";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 const Checkout = () => {
   const [address, setAddress] = useState("");
@@ -72,6 +72,7 @@ const Checkout = () => {
 
   return (
     <main>
+      {useDocumentTitle('Checkout')}
       <a
         href="/"
         className="flex navbar-brand font-bold text-3xl title-font relative p-6"
@@ -80,8 +81,8 @@ const Checkout = () => {
         <span className="w-3 h-3 rounded-full bg-orange self-end mb-0.5"></span>
       </a>
       <div className="bg-gray-300">
-        <div className="container flex">
-          <div className="p-4 w-7/10">
+        <div className="container flex max-md:flex-col">
+          <div className="p-4 lg:w-7/10">
             <div className="bg-white p-4 rounded-lg">
               <h2 className="text-2xl font-semibold mb-4">Shipping Address</h2>
               <div className="mb-4">
@@ -172,9 +173,14 @@ const Checkout = () => {
                   );
                 })}
               </div>
+              <div className="flex justify-center py-4 text-xl text-orange-lighter cursor-pointer uppercase font-semibold">
+                <Link to={`/cart`}>
+                  Modify Cart
+                </Link>
+              </div>
             </div>
           </div>
-          <div className="p-5 w-3/10">
+          <div className="p-5 lg:w-3/10">
             <div className="bg-gray-100 rounded-lg p-5">
               <h2 className="text-2xl font-semibold mb-4">Order summary</h2>
               <div className="flex flex-col justify-between flex-wrap">

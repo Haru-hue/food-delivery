@@ -3,22 +3,24 @@ import { login } from "../assets";
 
 const LoginRoot = () => {
   return (
-    <main className="min-h-screen min-w-screen overflow-hidden">
+    <main>
       <div className="absolute">
-        <a
+        
+      </div>
+      <div className="flex max-md:flex-col">
+        <div
+          className="flex w-full md:w-1/2 2xl:h-screen bg-cover max-md:justify-center"
+          style={{ backgroundImage: `url(${login})` }}
+        >
+         <a
           href="/"
-          className="flex navbar-brand font-bold text-5xl title-font relative text-white p-6"
+          className="flex navbar-brand font-bold text-5xl title-font relative text-white p-2 md:p-6 md:h-24"
         >
           Budo
           <span className="w-3 h-3 rounded-full self-end bg-orange mb-2"></span>
         </a>
-      </div>
-      <div className="flex">
-        <div
-          className="flex w-1/2 h-screen bg-cover"
-          style={{ backgroundImage: `url(${login})` }}
-        ></div>
-        <div className="flex w-1/2 h-screen items-center">
+        </div>
+        <div className="flex md:w-1/2 2xl:h-screen items-center">
           <Outlet />
         </div>
       </div>

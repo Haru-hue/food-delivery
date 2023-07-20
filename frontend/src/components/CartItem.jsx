@@ -35,33 +35,35 @@ export default function CartItem(props) {
   };
 
   return (
-    <div className="border-2 border-solid border-gray-100 rounded-xl flex justify-between overflow-hidden items-center my-4">
-      <div className="flex bg-gray-300 bg-opacity-10 backdrop-filter backdrop-blur items-center justify-between w-lg px-10 py-4">
-        <div className="w-14 h-14 rounded-full border-2 border-orange flex justify-center cursor-pointer" onClick={() => props.onClick(props.id)}>
-          {props.isClicked && <div className="w-10 h-10 rounded-full bg-orange self-center"></div>}
+    <div className="border-2 border-solid border-gray-100 rounded-xl flex justify-between overflow-hidden items-center my-4 mx-3">
+      <div className="cart-item">
+        <div className="cart-button max-lg:p-4 max-lg:mx-2" onClick={() => props.onClick(props.id)}>
+          {props.isClicked && <div className="w-2 h-2 md:w-4 md:h-4 lg:w-10 lg:h-10 rounded-full bg-orange self-center max-lg:p-2"></div>}
         </div>
         <img
           src={props.image}
           alt={props.name}
-          className="w-96 h-48 rounded-2xl p-2 object-cover"
+          className="cart-image"
         />
-        <div className="flex flex-col space-y-2">
-          <h1 className="font-bold text-2xl w-[175px]">{props.name}</h1>
-          <p className="text-gray text-sm">{props.vendorName}</p>
+        <div className="flex xl:items-center max-xl:flex-col xl:space-y-10">
+          <div className="flex flex-col space-y-2">
+            <h1 className="xl:font-bold text-sm md:text-lg xl:text-2xl whitespace-nowrap overflow-hidden">{props.name}</h1>
+            <p className="text-gray text-sm max-xl:hidden">{props.vendorName}</p>
+          </div>
+          <p className="text-base md:text-2xl lg:text-3xl font-bold">
+            <span className="text-orange text-base">₦</span>
+            {props.price.toLocaleString()}.00
+          </p>
         </div>
-        <p className="text-3xl font-bold">
-          <span className="text-orange text-base">₦</span>
-          {props.price.toLocaleString()}.00
-        </p>
-        <div className="flex items-center justify-center space-x-0">
+        <div className="flex items-center justify-center space-x-0 md:w-3/10">
           <button
-            className="rounded-l-lg px-3 py-1 bg-orange text-white hover:bg-orange-300"
+            className="minus hover:bg-orange-300"
             onClick={() => updateItemQuantity(props.id, -1)}
           >
-            <span className="font-bold text-xl leading-none">-</span>
+            <span className="font-bold text-base lg:text-xl leading-none">-</span>
           </button>
           <input
-            className="w-1/5 px-3 py-1 bg-orange text-white border-l border-r border-gray-200 text-center font-bold appearance-none"
+            className="value appearance-none"
             type="text"
             min={1}
             value={props.quantity}
@@ -70,15 +72,15 @@ export default function CartItem(props) {
             }
           />
           <button
-            className="rounded-r-lg px-3 py-1 bg-orange text-white hover:bg-orange-300"
+            className="add hover:bg-orange-300"
             onClick={() => updateItemQuantity(props.id, 1)}
           >
-            <span className="font-bold text-xl leading-none">+</span>
+            <span className="font-bold text-base lg:text-xl leading-none">+</span>
           </button>
         </div>
       </div>
-      <button onClick={() => deleteCartItem(props.id)} className="pr-24">
-        <Icon icon="ph:trash-bold" className="text-6xl text-orange" />
+      <button onClick={() => deleteCartItem(props.id)} className="max-lg:m-2 lg:px-12">
+        <Icon icon="ph:trash-bold" className="text-2xl md:text-5xl text-orange" />
       </button>
     </div>
   );

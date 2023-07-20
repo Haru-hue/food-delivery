@@ -1,0 +1,21 @@
+@layer components {
+    .cart-item {
+        @apply flex bg-gray-300 bg-opacity-10 backdrop-filter backdrop-blur items-center justify-around 
+        md:space-x-6 xl:space-x-10 2xl:justify-between md:w-lg lg:px-4 xl:px-6 2xl:px-10 py-4;
+    }
+    .cart-image {
+        @apply w-32 h-16 md:w-56 md:h-28 lg:w-96 lg:h-48 rounded-2xl p-2 object-cover;
+    }
+    .minus {
+        @apply rounded-l-lg md:px-3 md:py-1 md:bg-orange md:text-white;
+    }
+    .add {
+        @apply rounded-r-lg md:px-3 md:py-1 md:bg-orange md:text-white;
+    }
+    .value {
+      @apply bg-transparent lg:pt-2 w-1/5 md:px-3 md:py-1 md:bg-orange md:text-white border-l border-r border-gray-200 text-center font-bold
+    }
+    .cart-button {
+        @apply w-4 h-4 md:w-10 md:h-10 lg:w-16 lg:h-16 xl:w-20 xl:h-20 lg:p-4 rounded-full border-2 border-orange flex justify-center cursor-pointer
+    }
+}

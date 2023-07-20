@@ -2,7 +2,7 @@ import { createContext, useReducer, useMemo, useCallback } from "react";
 import axios from "axios";
 
 export const AppContext = createContext();
-export const url = import.meta.env.VITE_API_URL
+export const url = import.meta.env.VITE_API_URL;
 
 const createInitialState = () => ({
   user: null,
@@ -39,18 +39,20 @@ const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
       const { ...user } = action.payload;
-      const localItems = JSON.parse(localStorage.getItem("cartItems")) || []
-      const userItems = action.cart
-      const mergedCartItems = [...userItems]
+      const localItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      const userItems = action.cart || [];
+      const mergedCartItems = [...userItems];
 
       localItems?.forEach((localItem) => {
-        const existingItem = mergedCartItems.find(item => item._id === localItem._id)
-        if(existingItem) {
-          existingItem.quantity += localItem.quantity
+        const existingItem = mergedCartItems.find(
+          (item) => item._id === localItem._id
+        );
+        if (existingItem) {
+          existingItem.quantity += localItem.quantity;
         } else {
-          mergedCartItems.push(localItem)
+          mergedCartItems.push(localItem);
         }
-      })
+      });
       // Save the session and user data to localStorage
       localStorage.setItem("currentUser", JSON.stringify(user));
       // Update the state with the user data and merged cart items
@@ -111,14 +113,14 @@ export function AppContextProvider({ children }) {
         })
         .catch((error) => {
           console.error("Error updating user cart:", error);
-        });;
+        });
     }
   }, [state.user, state.cartItems]);
 
-  setCartItems()
-  
+  setCartItems();
+
   const totalItems = useMemo(
-    () => state.cartItems.reduce((acc, item) => acc + item.quantity, 0),
+    () => state.cartItems?.reduce((acc, item) => acc + item.quantity, 0),
     [state.cartItems]
   );
 

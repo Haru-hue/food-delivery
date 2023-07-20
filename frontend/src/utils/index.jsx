@@ -5,6 +5,7 @@ import { AppContext } from "./Context";
 import Loading from "../components/Loading";
 import { Link, useLocation } from "react-router-dom";
 import "./FadeIn.scss";
+import { Helmet } from "react-helmet";
 
 const publicKey = import.meta.env.VITE_API_KEY;
 const serviceKey = import.meta.env.VITE_SERVICE_KEY;
@@ -279,3 +280,11 @@ export const FadeIn = ({ children, url }) => {
     </div>
   );
 };
+
+export const useDocumentTitle = (title) => {
+  return (
+    <Helmet>
+    <title>{title} - Budo, your friendly food service</title>
+  </Helmet>
+  )
+}

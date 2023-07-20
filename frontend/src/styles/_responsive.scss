@@ -1,0 +1,38 @@
+@layer components {
+    .lg-heading {
+      @apply lg:text-[4.5rem] md:leading-[5.5rem] md:w-[450px];
+      @apply max-lg:text-5xl max-lg:w-4/5 max-md:leading-[3rem];
+    }
+    .title-heading {
+       @apply md:w-[500px] md:text-5xl md:leading-[3.5rem]; 
+    }
+    .lg-heading1 {
+       @apply md:text-5xl md:w-[500px] md:leading-tight;
+    }
+    .circle {
+        @apply lg:w-48 lg:h-48 md:translate-x-[-50%] max-md:hidden;
+        @apply max-lg:w-24 max-lg:h-24 max-lg:left-10;
+    }
+    .small-circle {
+        @apply md:w-28 md:h-28 md:-top-10 max-md:w-16 max-md:h-16 max-md:-top-5 max-md:hidden;
+    }
+    .list {
+       @apply md:p-4 lg:pt-10 max-md:space-y-8 md:space-y-4 2xl:space-y-16;
+    }
+    .worker-image {
+        @apply md:block md:mt-4 max-lg:w-2/5 2xl:w-3/4 2xl:ml-auto;
+    }
+    .shaw-md {
+        @apply md:w-96 max-lg:h-[32rem] lg:ml-auto xl:py-14 xl:px-10;
+    }
+    .work-column {
+        @apply max-lg:flex max-lg:items-center max-lg:justify-center xl:columns-2;
+    }
+    .menu-card {
+        @apply border border-solid border-gray-400;
+    }
+    .checkout-button {
+        @apply 2xl:px-72 2xl:py-10  2xl:text-3xl;
+    }
+  }
+

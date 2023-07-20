@@ -6,7 +6,6 @@ module.exports = {
     container: {
       center: true
     },
-    
     extend: {
       colors: {
         orange: "#F4572B",
@@ -21,6 +20,11 @@ module.exports = {
         '7/10': '70%',
         '3/10': '30%',
         '1/20': '5%',
+      },
+      screens: {
+        'max-md': {'max': '767px'},
+        'max-lg': {'max': '1023px'},
+        'max-xl': {'max': '1280px'}
       }
     },
   },

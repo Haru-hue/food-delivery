@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect, useContext } from "react";
 import { Icon } from "@iconify/react";
 import Rating from "../components/Rating";
 import { AppContext, url } from "../utils/Context";
+import { useDocumentTitle } from "../utils";
 
 export const line = <div className="w-full border-b border-gray-300"></div>;
 
@@ -62,7 +63,7 @@ const Menu = () => {
   }
 
   const handleClick = async (newItem) => {
-    const itemOpt = state.cartItems.find((item) => item._id === newItem._id);
+    const itemOpt = state.cartItems?.find((item) => item._id === newItem._id);
     if (!itemOpt) {
       // Add the new item to the cart
       const updatedCart = [...state.cartItems, { ...newItem, quantity: 1 }];
@@ -113,7 +114,7 @@ const Menu = () => {
             </p>
           </div>
           {line}
-          <div className="pt-4 flex justify-between w-[300px]">
+          <div className="pt-4 flex justify-between lg:w-[200px] 2xl:w-[300px]">
             <h1 className="font-bold text-lg">
               ₦{item.price.toLocaleString()}.00
             </h1>
@@ -148,7 +149,9 @@ const Menu = () => {
         onClick={() => {
           handleId(item._id);
         }}
-        className={`${item._id === active && !allItems ? "bg-orange text-white" : ""} px-10 rounded-full`}
+        className={`${
+          item._id === active && !allItems ? "bg-orange text-white" : ""
+        } lg:px-10 rounded-full`}
       >
         {item.name}
       </button>
@@ -157,32 +160,36 @@ const Menu = () => {
 
   return (
     <main className="py-2 container">
+      {useDocumentTitle('Menu')}
       <div className="flex items-center justify-between">
         <div className="flex items-baseline space-x-5">
-          <h1 className="font-bold text-3xl">Find the best foods</h1>
+          <h1 className="font-bold text-3xl max-md:hidden">Find the best foods</h1>
           <img src={ff} alt="" className="w-10" />
         </div>
-        <select className="select-custom bg-gray-300 p-4 rounded-md" onChange={handleSelect}
+        <select
+          className="select-custom bg-gray-300 max-md:p-2 max-md:m-2 p-4 rounded-md"
+          onChange={handleSelect}
           value={sortOption}
         >
-          <option value="default">
-            Sort by default
-          </option>
+          <option value="default">Sort by default</option>
           <option value="rating">Sort by rating</option>
           <option value="lowp">Price: Low to High</option>
           <option value="highp">Price: High to Low</option>
         </select>
       </div>
-      <div className="flex justify-center space-x-14 py-5">
+      <div className="flex items-center justify-center max-md:flex-wrap max-md:space-y-4 md:space-x-14 py-5">
         <button
           onClick={() => setAllItems(true)}
-          className={`px-10 py-2 ${allItems ? "bg-orange text-white" : ""} rounded-full`}
+          className={`px-10 ${
+            allItems ? "bg-orange text-white" : ""
+          } rounded-full`}
         >
           All
         </button>
-        `{allVendors}
+        
+        {allVendors}
       </div>
-      <div className="grid grid-cols-3 gap-3 px-48">{displayMenu}</div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 px-3 gap-10 2xl:px-48">{displayMenu}</div>
     </main>
   );
 };
