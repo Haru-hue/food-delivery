@@ -2,9 +2,9 @@
 Budo is a web-based application that allows users to browse and order food items from vendors at Babcock University for delivery or pickup. The app aims to provide a seamless and user-friendly experience for both customers and restaurant owners.
 
 # Table of Contents
-* [About](https://github.com/Haru-hue/food-delivery/edit/main/README.md#About)
-* [Getting Started](https://github.com/Haru-hue/food-delivery/edit/main/README.md#todo_list)
-* [Technologies](https://github.com/Haru-hue/food-delivery/edit/main/README.md#technologies)
+* [About](https://github.com/Haru-hue/food-delivery/main/README.md#About)
+* [Getting Started](https://github.com/Haru-hue/food-delivery/main/README.md#todo_list)
+* [Technologies](https://github.com/Haru-hue/food-delivery/main/README.md#technologies)
 
 # 🧐 About
 Budo was initially a final-year project about the Design and Implementation of a Food Delivery Application
