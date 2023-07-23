@@ -43,6 +43,8 @@ const reducer = (state, action) => {
       const { ...user } = action.payload;
       const localItems = JSON.parse(localStorage.getItem("cartItems")) || [];
       const userItems = action.cart || [];
+      // You can probably use `action.cart` without copying it
+      // but just double check if that doesn't mess up anything
       const mergedCartItems = [...userItems];
 
       localItems?.forEach((localItem) => {
@@ -87,8 +89,12 @@ const reducer = (state, action) => {
       };
     case "CHECKOUT":
       // Remove the clicked items from the cartItems array
+      // You don't really need an alias for this
       const clickedItems = action.payload;
       const remainingCartItems = state.cartItems.filter(
+        // No need to map then use includes here, that is double work
+        // You could use find or findIndex which accepts a predicate
+        // action.payload.find(a => a._id === item._id) // It returns undefined or the item itself
         (item) => !clickedItems.map((i) => i._id).includes(item._id)
       );
       localStorage.setItem("cartItems", JSON.stringify(remainingCartItems));
