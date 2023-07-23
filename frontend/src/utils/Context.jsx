@@ -18,6 +18,8 @@ const getInitialState = () => {
   }
 
   try {
+    // I would love to see you creating a safe parser for localstorage
+    // that would simplify the code you have here and make your application a bit more stable
     const user = JSON.parse(userData);
     const cartItems = JSON.parse(cartItemData);
 
