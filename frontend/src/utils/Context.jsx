@@ -128,6 +128,12 @@ export function AppContextProvider({ children }) {
   setCartItems();
 
   const totalItems = useMemo(
+    // You might want to do an if statement here as `totalItems` will be either undefined or a number
+    // I think it would be safer if it is always a number
+    // () => {
+    //  if (!state.cartItems) return 0
+    //  return state.cartItems?.reduce((acc, item) => acc + item.quantity, 0)
+    // }, [state.cartItems])
     () => state.cartItems?.reduce((acc, item) => acc + item.quantity, 0),
     [state.cartItems]
   );
