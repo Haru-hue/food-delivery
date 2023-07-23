@@ -110,6 +110,7 @@ const reducer = (state, action) => {
 export function AppContextProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, getInitialState());
 
+  // This should be a useEffect :O
   const setCartItems = useCallback(async () => {
     if (state.user) {
       axios
@@ -125,6 +126,8 @@ export function AppContextProvider({ children }) {
     }
   }, [state.user, state.cartItems]);
 
+  // This is wrong to do it here :/
+  // This could cause you some unexpected problems
   setCartItems();
 
   const totalItems = useMemo(
