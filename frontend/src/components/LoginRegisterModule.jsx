@@ -80,6 +80,8 @@ export const Register = () => {
     }
   }
 
+  // `isValid` doesn't need to be a state,
+  // you should use `useMemo` just like you do for the `menu`
   useEffect(() => {
     const isValid =
       user.firstName !== "" &&
