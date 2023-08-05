@@ -18,6 +18,8 @@ const getInitialState = () => {
   }
 
   try {
+    // I would love to see you creating a safe parser for localstorage
+    // that would simplify the code you have here and make your application a bit more stable
     const user = JSON.parse(userData);
     const cartItems = JSON.parse(cartItemData);
 
@@ -41,6 +43,8 @@ const reducer = (state, action) => {
       const { ...user } = action.payload;
       const localItems = JSON.parse(localStorage.getItem("cartItems")) || [];
       const userItems = action.cart || [];
+      // You can probably use `action.cart` without copying it
+      // but just double check if that doesn't mess up anything
       const mergedCartItems = [...userItems];
 
       localItems?.forEach((localItem) => {
@@ -85,8 +89,12 @@ const reducer = (state, action) => {
       };
     case "CHECKOUT":
       // Remove the clicked items from the cartItems array
+      // You don't really need an alias for this
       const clickedItems = action.payload;
       const remainingCartItems = state.cartItems.filter(
+        // No need to map then use includes here, that is double work
+        // You could use find or findIndex which accepts a predicate
+        // action.payload.find(a => a._id === item._id) // It returns undefined or the item itself
         (item) => !clickedItems.map((i) => i._id).includes(item._id)
       );
       localStorage.setItem("cartItems", JSON.stringify(remainingCartItems));
@@ -102,6 +110,7 @@ const reducer = (state, action) => {
 export function AppContextProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, getInitialState());
 
+  // This should be a useEffect :O
   const setCartItems = useCallback(async () => {
     if (state.user) {
       axios
@@ -117,9 +126,17 @@ export function AppContextProvider({ children }) {
     }
   }, [state.user, state.cartItems]);
 
+  // This is wrong to do it here :/
+  // This could cause you some unexpected problems
   setCartItems();
 
   const totalItems = useMemo(
+    // You might want to do an if statement here as `totalItems` will be either undefined or a number
+    // I think it would be safer if it is always a number
+    // () => {
+    //  if (!state.cartItems) return 0
+    //  return state.cartItems?.reduce((acc, item) => acc + item.quantity, 0)
+    // }, [state.cartItems])
     () => state.cartItems?.reduce((acc, item) => acc + item.quantity, 0),
     [state.cartItems]
   );
