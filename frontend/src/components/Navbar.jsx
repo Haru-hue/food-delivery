@@ -21,8 +21,6 @@ const Navbar = () => {
       });
   };
 
-  console.log(isMenuVisible);
-
   return (
     <header className="container mb-4 px-2">
       <nav className="bg-black max-w-4xl mx-auto py-2 rounded-b-3xl">

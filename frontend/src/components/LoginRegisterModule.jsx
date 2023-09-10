@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AppContext, url } from "../utils/Context";
 import { Icon } from "@iconify/react";
@@ -40,7 +40,6 @@ export const Register = () => {
   });
   const [correct, setCorrect] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [isValid, setIsValid] = useState(false);
 
   const Authenticate = async (user, show) => {
     showPopup(() => {
@@ -80,11 +79,8 @@ export const Register = () => {
     }
   }
 
-  // `isValid` doesn't need to be a state,
-  // you should use `useMemo` just like you do for the `menu`
-  useEffect(() => {
-    const isValid =
-      user.firstName !== "" &&
+  const isValid = useMemo(() => {
+    user.firstName !== "" &&
       user.lastName !== "" &&
       user.gender !== "" &&
       user.email !== "" &&
@@ -92,7 +88,6 @@ export const Register = () => {
       user.phoneNumber !== "" &&
       confirmPassword !== "" &&
       isChecked;
-    setIsValid(isValid);
   }, [user, confirmPassword, isChecked]);
 
   const handleChange = (e) => {
